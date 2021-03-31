@@ -7,6 +7,11 @@ verify_ssl = true
 
 [packages]
 flask = "*"
+bcrypt = "*"
+flask-mongoengine = "*"
+pillow = "*"
+flask-login = "*"
+is-safe-url = "*"
 
 [requires]
 python_version = "3.7"
