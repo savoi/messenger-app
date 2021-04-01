@@ -1,6 +1,6 @@
 from flask import jsonify, Blueprint
 
-from models import User
+from db.db import User
 from flask_login import login_required
 
 home_handler = Blueprint('home_handler', __name__)
