@@ -8,14 +8,18 @@
 2. A sample dataset is provided to populate the database with test data. Import
    it using the following command:
 
+   ```
    $ mongorestore --gzip --archive=sample_db_dump.gz --nsInclude="messenger.*"
+   ```
 
 ## .env Setup
 
 1. Copy the file .env.sample to .env and in the new file, enter a new Flask
    secret key in the [SECRET_KEY] entry. Generate a new key with the command:
 
+   ```
    $ python -c 'import os; print(os.urandom(16))'
+   ```
 
 ## Starting the server:
 
