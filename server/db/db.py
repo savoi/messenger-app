@@ -1,4 +1,4 @@
-from flask_mongoengine import MongoEngine
+from flask_mongoengine import DoesNotExist, MongoEngine
 
 db = MongoEngine()
 
@@ -12,7 +12,7 @@ class User(db.Document):
     )
     email = db.EmailField(
         required = True,
-        unique = True
+        unique_with = 'username'
     )
     password = db.StringField(
         required = True
@@ -47,7 +47,11 @@ def initialize_db(app):
 
 # Return a `user` document from the db
 def get_user(email):
-    return User.objects.get(email=email)
+    try:
+        user = User.objects.get(email=email)
+    except DoesNotExist as dne:
+        user = None
+    return user
 
 # Add a new user/credential set to the db
 def add_user(username, email, hashedpw):
