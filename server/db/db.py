@@ -1,4 +1,5 @@
 from flask_mongoengine import DoesNotExist, MongoEngine
+from mongoengine import ValidationError
 
 db = MongoEngine()
 
@@ -62,6 +63,8 @@ def add_user(username, email, hashedpw):
             password = hashedpw
         ).save()
         return {"success": True}
+    except ValidationError as ve:
+        return {'error': str(ve)}
     except Exception as e:
         return {"error": e}
 
