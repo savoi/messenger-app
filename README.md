@@ -28,3 +28,12 @@
 2. Install the dependencies with `pipenv install`. This also creates a virtual
    environment, if there isn't one already.
 3. Activate the virtual environment and start the app with `pipenv run flask run`
+
+## Testing the application
+
+1. From the server directory, ensure that the virtualenv is active and enter the
+   following command to run the unit tests:
+
+   ```
+   $ python -m unittest discover -s test -v
+   ```
