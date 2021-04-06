@@ -34,7 +34,7 @@ def register():
     if len(password) < 6:
         errors['password'] = "Your password must be at least 6 characters."
     if len(errors.keys()) != 0:
-        return jsonify({'status': 'fail', 'error': errors}), 411
+        return jsonify({'status': 'fail', 'error': errors}), 422
 
     # Check if username already exists
     user = get_user(email)

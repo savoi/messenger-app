@@ -60,7 +60,7 @@ class AuthTest(TestBase):
             'password': "passworda"
         }
         response = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
-        self.assertEqual(response.status_code, 411)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(
             response.json['error']['username'],
             "Your username must be at least 2 characters."
