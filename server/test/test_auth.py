@@ -53,6 +53,19 @@ class AuthTest(TestBase):
             response.json['error']['email'],
             "ValidationError (User:None) (Invalid email address: : ['email'])")
 
+    def test_register_username_too_short(self):
+        new_user = {
+            'username': "A",
+            'email': "abcdefg@fakemail.com",
+            'password': "passworda"
+        }
+        response = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
+        self.assertEqual(response.status_code, 411)
+        self.assertEqual(
+            response.json['error']['username'],
+            "Your username must be at least 2 characters."
+        )
+
     def test_get_login_page(self):
         response = self.api.get('/login')
         self.assertEqual(response.status_code, 200)

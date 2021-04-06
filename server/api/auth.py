@@ -30,7 +30,7 @@ def register():
     # Server-side field validation
     errors = {}
     if len(username) < 2:
-        errors['name'] = "Your username must be at least 2 characters."
+        errors['username'] = "Your username must be at least 2 characters."
     if len(password) < 6:
         errors['password'] = "Your password must be at least 6 characters."
     if len(errors.keys()) != 0:
