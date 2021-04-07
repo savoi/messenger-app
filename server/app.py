@@ -4,8 +4,6 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from flask_mongoengine import MongoEngine
-from api.ping_handler import ping_handler
-from api.home_handler import home_handler
 from api.auth import auth
 from db.db import initialize_db, User
 
@@ -32,6 +30,4 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.objects.get(email=user_id)
 
-app.register_blueprint(home_handler)
-app.register_blueprint(ping_handler)
 app.register_blueprint(auth)

@@ -25,7 +25,7 @@ class AuthTest(TestBase):
         response = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(
-            response.json['response'],
+            response.json['success'],
             "User successfully registered!")
 
     def test_register_user_already_exists(self):
@@ -92,10 +92,10 @@ class AuthTest(TestBase):
         }
         response = self.api.post('/register', data=json.dumps(non_existant_user), mimetype='application/json')
         response = self.api.post('/login', data=json.dumps(non_existant_user), mimetype='application/json')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(
-            response.location,
-            'http://localhost/welcome-protected'
+            response.json['success'],
+            "User login successful!"
         )
 
     def test_login_failure_no_user(self):
