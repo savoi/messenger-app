@@ -72,7 +72,7 @@ def login():
 
         # Compare password hashes
         if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            response = {'error': {'password': 'Make sure your password is correct.'}}
+            response = {'error': {'auth': 'The email/password is incorrect.'}}
             return jsonify(response), 401
 
         try:

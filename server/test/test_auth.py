@@ -128,6 +128,6 @@ class AuthTest(TestBase):
         response = self.api.post('/login', data=json.dumps(non_existant_user), mimetype='application/json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(
-            response.json['error']['password'],
-            "Make sure your password is correct."
+            response.json['error']['auth'],
+            "The email/password is incorrect."
         )
