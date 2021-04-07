@@ -111,10 +111,10 @@ class AuthTest(TestBase):
             'password': "passwordnonexistant"
         }
         response = self.api.post('/login', data=json.dumps(non_existant_user), mimetype='application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(
-            response.json['error']['email'],
-            "Make sure your email is correct."
+            response.json['error']['auth'],
+            "The email/password is incorrect."
         )
 
     def test_login_failure_bad_password(self):
@@ -126,7 +126,7 @@ class AuthTest(TestBase):
         response = self.api.post('/register', data=json.dumps(non_existant_user), mimetype='application/json')
         non_existant_user['password'] = "incorrectpassword"
         response = self.api.post('/login', data=json.dumps(non_existant_user), mimetype='application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(
             response.json['error']['auth'],
             "The email/password is incorrect."

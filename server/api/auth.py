@@ -65,15 +65,14 @@ def login():
             return jsonify({'error': str(e)}), 400
 
         # Check if user exists
+        AUTH_ERROR = {'error': {'auth': "The email/password is incorrect."}}
         user = get_user(email)
         if not user:
-            response = {'error': {'email': 'Make sure your email is correct.'}}
-            return jsonify(response), 401
+            return jsonify(AUTH_ERROR), 422
 
         # Compare password hashes
         if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            response = {'error': {'auth': 'The email/password is incorrect.'}}
-            return jsonify(response), 401
+            return jsonify(AUTH_ERROR), 422
 
         try:
             login_user(user)
