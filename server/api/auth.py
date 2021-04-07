@@ -49,10 +49,6 @@ def register():
             user = get_user(email)
             login_user(user)
             return jsonify({'response': "User successfully registered!"}), 201
-            #next = request.args.get('next')
-            #if next and not is_safe_url(next, {request.host}):
-            #    return abort(400)
-            #return redirect(next or url_for('home_handler.welcome_protected'))
         except Exception as e:
             return jsonify({'error': {'internal': e}}), 500
 
