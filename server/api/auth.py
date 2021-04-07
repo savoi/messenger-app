@@ -62,7 +62,7 @@ def login():
             email = post_data.get('email')
             password = post_data.get('password')
         except Exception as e:
-            jsonify({'error': str(e)}), 400
+            return jsonify({'error': str(e)}), 400
 
         # Check if user exists
         user = get_user(email)
