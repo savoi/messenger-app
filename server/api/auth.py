@@ -52,35 +52,32 @@ def register():
         except Exception as e:
             return jsonify({'error': {'internal': e}}), 500
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        email = ""
-        password = ""
-        try:
-            post_data = request.get_json()
-            email = post_data.get('email')
-            password = post_data.get('password')
-        except Exception as e:
-            return jsonify({'error': str(e)}), 400
+    email = ""
+    password = ""
+    try:
+        post_data = request.get_json()
+        email = post_data.get('email')
+        password = post_data.get('password')
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
-        # Check if user exists
-        AUTH_ERROR = {'error': {'auth': "The email/password is incorrect."}}
-        user = get_user(email)
-        if not user:
-            return jsonify(AUTH_ERROR), 422
+    # Check if user exists
+    AUTH_ERROR = {'error': {'auth': "The email/password is incorrect."}}
+    user = get_user(email)
+    if not user:
+        return jsonify(AUTH_ERROR), 422
 
-        # Compare password hashes
-        if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            return jsonify(AUTH_ERROR), 422
+    # Compare password hashes
+    if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+        return jsonify(AUTH_ERROR), 422
 
-        try:
-            login_user(user)
-            next = request.args.get('next')
-            if next and not is_safe_url(next, {request.host}):
-                return abort(400)
-            return redirect(next or url_for('home_handler.welcome_protected'))
-        except Exception as e:
-            return jsonify({'error': {'internal': e}}), 500
-
-    return jsonify({'response': "Welcome to the login page!"}), 200
+    try:
+        login_user(user)
+        next = request.args.get('next')
+        if next and not is_safe_url(next, {request.host}):
+            return abort(400)
+        return redirect(next or url_for('home_handler.welcome_protected'))
+    except Exception as e:
+        return jsonify({'error': {'internal': e}}), 500

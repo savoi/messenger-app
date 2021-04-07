@@ -84,13 +84,6 @@ class AuthTest(TestBase):
             "Your username must be at least 2 characters."
         )
 
-    def test_get_login_page(self):
-        response = self.api.get('/login')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json['response'],
-            "Welcome to the login page!")
-
     def test_login_success(self):
         non_existant_user = {
             'username': "testabc",
