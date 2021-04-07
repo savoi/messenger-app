@@ -18,14 +18,13 @@ class User(db.Document):
     password = db.StringField(
         required = True
     )
-    authenticated = db.BooleanField()
     profile_photo = db.ImageField(
         size = (800, 800, True)
     )
 
     # Requisite functions for flask-login
     def is_authenticated(self):
-        return self.authenticated
+        return True
     def is_active(self):
         return True
     def is_anonymous(self):
