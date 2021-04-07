@@ -36,9 +36,27 @@ class AuthTest(TestBase):
         }
         response1 = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
         response2 = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
-        self.assertEqual(response2.status_code, 401)
+        self.assertEqual(response2.status_code, 422)
         self.assertEqual(
-            response2.json['error'],
+            response2.json['error']['not_unique'],
+            "That email/username already exists.")
+
+    def test_register_username_already_exists(self):
+        new_user = {
+            'username': "jupiter",
+            'email': "jupiter@hellomail.com",
+            'password': "passwordjupiter"
+        }
+        new_user_2 = {
+            'username': "jupiter",
+            'email': "jupiter@fakemail.com",
+            'password': "passwordjupiter"
+        }
+        response1 = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
+        response2 = self.api.post('/register', data=json.dumps(new_user_2), mimetype='application/json')
+        self.assertEqual(response2.status_code, 422)
+        self.assertEqual(
+            response2.json['error']['not_unique'],
             "That email/username already exists.")
 
     def test_register_missing_email(self):
@@ -48,9 +66,9 @@ class AuthTest(TestBase):
             'password': "passwordchris"
         }
         response = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(
-            response.json['error']['email'],
+            response.json['error']['validation_error'],
             "ValidationError (User:None) (Invalid email address: : ['email'])")
 
     def test_register_username_too_short(self):

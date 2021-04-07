@@ -36,19 +36,14 @@ def register():
     if len(errors.keys()) != 0:
         return jsonify({'status': 'fail', 'error': errors}), 422
 
-    # Check if username already exists
-    user = get_user(email)
-    if user:
-        return jsonify({'error': "That email/username already exists."}), 401
-
-    # Add user to db. Hash and salted pass.
+    # Attempt to add user to db. Hash and salted pass.
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     add_user_response = add_user(username, email, hashed_password)
     if 'error' in add_user_response:
-        errors['email'] = add_user_response["error"]
+        errors.update(add_user_response['error'])
 
     if len(errors.keys()) != 0:
-        return jsonify({'error': errors}), 400
+        return jsonify({'error': errors}), 422
     else:
         try:
             user = get_user(email)

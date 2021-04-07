@@ -1,5 +1,5 @@
 from flask_mongoengine import DoesNotExist, MongoEngine
-from mongoengine import ValidationError
+from mongoengine import NotUniqueError, ValidationError
 
 db = MongoEngine()
 
@@ -13,7 +13,7 @@ class User(db.Document):
     )
     email = db.EmailField(
         required = True,
-        unique_with = 'username'
+        unique = True
     )
     password = db.StringField(
         required = True
@@ -63,10 +63,12 @@ def add_user(username, email, hashedpw):
             password = hashedpw
         ).save()
         return {"success": True}
+    except NotUniqueError as nue:
+        return {'error': {'not_unique': "That email/username already exists."}}
     except ValidationError as ve:
-        return {'error': str(ve)}
+        return {'error': {'validation_error': str(ve)}}
     except Exception as e:
-        return {"error": e}
+        return {"error": {'error': str(e)}}
 
 # Get a users session
 def get_user_session(email):
