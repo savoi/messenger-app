@@ -11,7 +11,7 @@ from flask import (
     session,
     url_for
 )
-from flask_login import login_user
+from flask_jwt_extended import create_access_token, set_access_cookies
 
 from db.db import add_user, get_user
 
@@ -47,8 +47,10 @@ def register():
     else:
         try:
             user = get_user(email)
-            login_user(user)
-            return jsonify({'success': "User successfully registered!"}), 201
+            response = jsonify({'success': "User successfully registered!"})
+            access_token = create_access_token(identity=user.email)
+            set_access_cookies(response, access_token)
+            return response, 201
         except Exception as e:
             return jsonify({'error': {'internal': e}}), 500
 
@@ -74,7 +76,9 @@ def login():
         return jsonify(AUTH_ERROR), 422
 
     try:
-        login_user(user)
-        return jsonify({'success': "User login successful!"}), 201
+        response = jsonify({'success': "User login successful!"})
+        access_token = create_access_token(identity=user.email)
+        set_access_cookies(response, access_token)
+        return response, 201
     except Exception as e:
         return jsonify({'error': {'internal': e}}), 500

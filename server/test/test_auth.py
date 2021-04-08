@@ -27,6 +27,7 @@ class AuthTest(TestBase):
         self.assertEqual(
             response.json['success'],
             "User successfully registered!")
+        self.assertTrue(response.headers['Set-Cookie'])
 
     def test_register_user_already_exists(self):
         new_user = {
@@ -97,6 +98,7 @@ class AuthTest(TestBase):
             response.json['success'],
             "User login successful!"
         )
+        self.assertTrue(response.headers['Set-Cookie'])
 
     def test_login_failure_no_user(self):
         non_existant_user = {

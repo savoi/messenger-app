@@ -14,8 +14,9 @@
 
 ## .env Setup
 
-1. Copy the file .env.sample to .env and in the new file, enter a new Flask
-   secret key in the [SECRET_KEY] entry. Generate a new key with the command:
+1. Copy the file .env.sample to .env and in the new file, enter a secret key in
+   the [SECRET_KEY] entry of the [JWT] section. Generate a new key with the
+   command:
 
    ```
    $ python -c 'import os; print(os.urandom(16))'

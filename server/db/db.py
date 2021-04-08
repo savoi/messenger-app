@@ -22,16 +22,6 @@ class User(db.Document):
         size = (800, 800, True)
     )
 
-    # Requisite functions for flask-login
-    def is_authenticated(self):
-        return True
-    def is_active(self):
-        return True
-    def is_anonymous(self):
-        return False
-    def get_id(self):
-        return self.email
-
 class Session(db.Document):
     meta = {"collection": "sessions"}
     userid = db.StringField(
