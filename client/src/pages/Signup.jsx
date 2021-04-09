@@ -121,9 +121,19 @@ function useRegister() {
 
   const login = async (username, email, password) => {
     console.log(email, password);
-    const res = await fetch(
-      `/auth/signup?username=${username}&email=${email}&password=${password}`
-    ).then(res => res.json());
+    const data = {
+      username: username,
+      email: email,
+      password: password
+    };
+    const res = await fetch('/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json());
     console.log(res);
     localStorage.setItem("user", res.user);
     localStorage.setItem("token", res.token);
