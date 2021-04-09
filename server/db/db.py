@@ -22,16 +22,6 @@ class User(db.Document):
         size = (800, 800, True)
     )
 
-class Session(db.Document):
-    meta = {"collection": "sessions"}
-    userid = db.StringField(
-        required = True,
-        unique = True
-    )
-    cookie = db.StringField(
-        required = True
-    )
-
 def initialize_db(app):
     db.init_app(app)
 
@@ -53,7 +43,11 @@ def add_user(username, email, hashedpw):
         ).save()
         return {"success": True}
     except NotUniqueError as nue:
-        return {'error': {'not_unique': "That email/username already exists."}}
+        unique_violations = {}
+        for field in User._fields:
+            if field in str(nue):
+                unique_violations[field] = 'That {} already exists.'.format(field)
+        return {'error': {'not_unique': unique_violations}}
     except ValidationError as ve:
         return {'error': {'validation_error': str(ve)}}
     except Exception as e:
