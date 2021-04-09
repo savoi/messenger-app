@@ -124,9 +124,18 @@ function useLogin() {
 
   const login = async (email, password) => {
     console.log(email, password);
-    const res = await fetch(
-      `/auth/login?email=${email}&password=${password}`
-    ).then(res => res.json());
+    const data = {
+      email: email,
+      password: password
+    }
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json());
     localStorage.setItem("user", res.user);
     localStorage.setItem("token", res.token);
     history.push("/dashboard");
