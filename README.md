@@ -21,6 +21,8 @@
    ```
    $ python -c 'import os; print(os.urandom(16))'
    ```
+2. Set ACCESS_TOKEN_EXPIRES to the number of hours you would like the JWT to be
+   valid for.
 
 ## Starting the server:
 
