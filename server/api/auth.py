@@ -11,7 +11,13 @@ from flask import (
     session,
     url_for
 )
-from flask_jwt_extended import create_access_token, set_access_cookies
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt_identity,
+    jwt_required,
+    set_access_cookies,
+    unset_jwt_cookies
+)
 
 from db.db import add_user, get_user
 
@@ -82,3 +88,24 @@ def login():
         return response, 201
     except Exception as e:
         return jsonify({'error': {'internal': e}}), 500
+
+@auth.route('/logout', methods=['POST'])
+def logout():
+    try:
+        response = {'success': "User successfully logged out!"}
+        unset_jwt_cookies(response)
+        return jsonify(response), 200
+    except Exception as e:
+        response = {'error': {'auth': "Could not log out user.", 'msg': str(e)}}
+        return jsonify(response), 500
+
+@auth.route('/user', methods=['POST'])
+@jwt_required()
+def user():
+    try:
+        current_user = get_jwt_identity()
+        response = {'current_user': current_user}
+        return jsonify(response), 200
+    except Exception as e:
+        response = {'error': {'auth': "Could not fetch user."}}
+        return jsonify(response), 500
