@@ -92,11 +92,11 @@ def login():
 @auth.route('/logout', methods=['POST'])
 def logout():
     try:
-        response = {'success': "User successfully logged out!"}
+        response = jsonify({'success': "User successfully logged out!"})
         unset_jwt_cookies(response)
-        return jsonify(response), 200
+        return response, 200
     except Exception as e:
-        response = {'error': {'auth': "Could not log out user.", 'msg': str(e)}}
+        response = {'error': {'status': 'error', 'message': "Could not log out user."}}
         return jsonify(response), 500
 
 @auth.route('/user', methods=['POST'])
