@@ -43,11 +43,12 @@ def add_user(username, email, hashedpw):
         ).save()
         return {"success": True}
     except NotUniqueError as nue:
-        unique_violations = {}
+        unique_violation = ""
         for field in User._fields:
             if field in str(nue):
-                unique_violations[field] = 'That {} already exists.'.format(field)
-        return {'error': {'not_unique': unique_violations}}
+                unique_violation = 'That {} already exists.'.format(field)
+                break
+        return {'error': {'status': "error", 'message': unique_violation}}
     except ValidationError as ve:
         return {'error': {'validation_error': str(ve)}}
     except Exception as e:

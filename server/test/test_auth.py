@@ -43,7 +43,10 @@ class AuthTest(TestBase):
         response1 = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
         response2 = self.api.post('/register', data=json.dumps(new_user_2), mimetype='application/json')
         self.assertEqual(response2.status_code, 422)
-        self.assertIn('not_unique', response2.json['error'])
+        self.assertEqual(
+            response2.json['error']['status'],
+            "error"
+        )
 
     def test_register_username_already_exists(self):
         new_user = {
@@ -59,7 +62,10 @@ class AuthTest(TestBase):
         response1 = self.api.post('/register', data=json.dumps(new_user), mimetype='application/json')
         response2 = self.api.post('/register', data=json.dumps(new_user_2), mimetype='application/json')
         self.assertEqual(response2.status_code, 422)
-        self.assertIn('not_unique', response2.json['error'])
+        self.assertEqual(
+            response2.json['error']['status'],
+            "error"
+        )
 
     def test_register_missing_email(self):
         new_user = {
