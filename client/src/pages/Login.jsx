@@ -10,7 +10,7 @@ import { Link, useHistory } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import { Formik } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -118,34 +118,68 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+async function makeRequestWithJWT(apiEndpoint) {
+  const options = {
+    method: 'post',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRF-TOKEN': getCookie('csrf_access_token'),
+    },
+  };
+  const response = await fetch(apiEndpoint, options);
+  const result = await response.json();
+  return result;
+}
+
+const loginSchema = Yup.object().shape({
+  email: Yup.string()
+    .required("Email is required")
+    .email("Email is not valid"),
+  password: Yup.string()
+    .required("Password is required")
+    .max(100, "Password is too long")
+    .min(6, "Password too short")
+})
+
 // Login middleware placeholder
 function useLogin() {
   const history = useHistory();
 
   const login = async (email, password) => {
-    console.log(email, password);
     const data = {
       email: email,
       password: password
     }
-    const res = await fetch('/login', {
+    const response = await fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data)
     })
-    .then(res => res.json());
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
-    history.push("/dashboard");
+    const jsonResponse = await response.json();
+    if (!response.ok) {
+      throw new Error(jsonResponse.error.message);
+    } else {
+      const userResponse = await makeRequestWithJWT('/user');
+      localStorage.setItem("user", userResponse['current_user']);
+      history.push("/dashboard");
+    }
+    return jsonResponse;
   };
   return login;
 }
 
 export default function Login() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [loginResponse, setLoginResponse] = React.useState("");
 
   const history = useHistory();
 
@@ -167,7 +201,7 @@ export default function Login() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" />
+            <img width={67} src="/images/chatBubble.png" alt="Chat bubble" />
             <Hidden smDown>
               <p className={classes.heroText}>
                 Converse with anyone with any language
@@ -184,7 +218,7 @@ export default function Login() {
                 Don't have an account?
               </Button>
               <Button
-                color="background"
+                color="default"
                 className={classes.accBtn}
                 variant="contained"
               >
@@ -206,19 +240,11 @@ export default function Login() {
                 email: "",
                 password: ""
               }}
-              validationSchema={Yup.object().shape({
-                email: Yup.string()
-                  .required("Email is required")
-                  .email("Email is not valid"),
-                password: Yup.string()
-                  .required("Password is required")
-                  .max(100, "Password is too long")
-                  .min(6, "Password too short")
-              })}
+              validationSchema={loginSchema}
               onSubmit={({ email, password }, { setStatus, setSubmitting }) => {
                 setStatus();
                 login(email, password).then(
-                  () => {
+                  (response) => {
                     // useHistory push to chat
                     console.log(email, password);
                     return;
@@ -226,15 +252,14 @@ export default function Login() {
                   error => {
                     setSubmitting(false);
                     setStatus(error);
+                    setLoginResponse(error.message);
+                    setOpen(true);
                   }
                 );
               }}
             >
               {({ handleSubmit, handleChange, values, touched, errors }) => (
-                <form
-                  onSubmit={handleSubmit}
-                  className={classes.form}
-                  noValidate
+                <Form className={classes.form}
                 >
                   <TextField
                     id="email"
@@ -279,7 +304,6 @@ export default function Login() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
-                    type="password"
                   />
 
                   <Box textAlign="center">
@@ -295,7 +319,7 @@ export default function Login() {
                   </Box>
 
                   <div style={{ height: 95 }} />
-                </form>
+                </Form>
               )}
             </Formik>
           </Box>
