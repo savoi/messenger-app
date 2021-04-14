@@ -130,8 +130,6 @@ const signupSchema = Yup.object().shape({
 });
 
 function useRegister() {
-  const history = useHistory();
-
   const login = async (username, email, password) => {
     const data = {
       username: username,
@@ -171,7 +169,7 @@ export default function Register() {
   React.useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) history.push("/dashboard");
-  }, []);
+  }, [history]);
 
   return (
     <Grid container component="main" className={classes.root}>
