@@ -116,25 +116,46 @@ const useStyles = makeStyles(theme => ({
   link: { textDecoration: "none", display: "flex", flexWrap: "nowrap" }
 }));
 
-function useRegister() {
-  const history = useHistory();
+const signupSchema = Yup.object().shape({
+  username: Yup.string()
+    .required("Username is required")
+    .max(40, "Username is too long"),
+  email: Yup.string()
+    .required("Email is required")
+    .email("Email is not valid"),
+  password: Yup.string()
+    .required("Password is required")
+    .max(100, "Password is too long")
+    .min(6, "Passwords must be at least 6 characters.")
+});
 
+function useRegister() {
   const login = async (username, email, password) => {
-    console.log(email, password);
-    const res = await fetch(
-      `/auth/signup?username=${username}&email=${email}&password=${password}`
-    ).then(res => res.json());
-    console.log(res);
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
-    history.push("/dashboard");
+    const data = {
+      username: username,
+      email: email,
+      password: password
+    };
+    const response = await fetch('/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    const jsonResponse = await response.json();
+    if (!response.ok) {
+      throw new Error(jsonResponse.error.message);
+    }
+    return jsonResponse;
   };
   return login;
 }
 
 export default function Register() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [registerResponse, setRegisterResponse] = React.useState("");
 
   const register = useRegister();
 
@@ -148,7 +169,7 @@ export default function Register() {
   React.useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) history.push("/dashboard");
-  }, []);
+  }, [history]);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -156,7 +177,7 @@ export default function Register() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" />
+            <img width={67} src="/images/chatBubble.png" alt="Chat bubble" />
             <Hidden smDown>
               <Typography className={classes.heroText}>
                 Converse with anyone with any language
@@ -173,7 +194,7 @@ export default function Register() {
                 Already have an account?
               </Button>
               <Button
-                color="background"
+                color="default"
                 className={classes.accBtn}
                 variant="contained"
               >
@@ -196,35 +217,28 @@ export default function Register() {
             </Grid>
             <Formik
               initialValues={{
+                username: "",
                 email: "",
                 password: ""
               }}
-              validationSchema={Yup.object().shape({
-                username: Yup.string()
-                  .required("Username is required")
-                  .max(40, "Username is too long"),
-                email: Yup.string()
-                  .required("Email is required")
-                  .email("Email is not valid"),
-                password: Yup.string()
-                  .required("Password is required")
-                  .max(100, "Password is too long")
-                  .min(6, "Password too short")
-              })}
+              validationSchema={signupSchema}
               onSubmit={(
                 { username, email, password },
                 { setStatus, setSubmitting }
               ) => {
                 setStatus();
                 register(username, email, password).then(
-                  () => {
+                  (response) => {
                     // useHistory push to chat
-                    console.log(email, password);
+                    setRegisterResponse("User successfully registered!");
+                    setOpen(true);
                     return;
                   },
-                  error => {
+                  (error) => {
                     setSubmitting(false);
                     setStatus(error);
+                    setRegisterResponse(error.message);
+                    setOpen(true);
                   }
                 );
               }}
@@ -243,7 +257,6 @@ export default function Register() {
                       </Typography>
                     }
                     fullWidth
-                    id="username"
                     margin="normal"
                     InputLabelProps={{
                       shrink: true
@@ -298,7 +311,6 @@ export default function Register() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
-                    type="password"
                   />
 
                   <Box textAlign="center">
@@ -326,7 +338,7 @@ export default function Register() {
           open={open}
           autoHideDuration={6000}
           onClose={handleClose}
-          message="Email already exists"
+          message={registerResponse}
           action={
             <React.Fragment>
               <IconButton

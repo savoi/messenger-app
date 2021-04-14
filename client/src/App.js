@@ -10,8 +10,6 @@ import Dashboard from "./pages/Dashboard";
 import "./App.css";
 
 function App() {
-  const [loggedIn, setLoggedIn] = React.useState(localStorage.getItem("user"));
-
   return (
     <MuiThemeProvider theme={theme}>
       <BrowserRouter>
