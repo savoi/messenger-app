@@ -14,6 +14,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import { makeRequestWithJWT } from "../common/APIUtils.js";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -117,25 +118,6 @@ const useStyles = makeStyles(theme => ({
     color: "#3a8dff"
   }
 }));
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-async function makeRequestWithJWT(apiEndpoint) {
-  const options = {
-    method: 'post',
-    credentials: 'same-origin',
-    headers: {
-      'X-CSRF-TOKEN': getCookie('csrf_access_token'),
-    },
-  };
-  const response = await fetch(apiEndpoint, options);
-  const result = await response.json();
-  return result;
-}
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
