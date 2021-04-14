@@ -35,13 +35,11 @@ export default function Dashboard() {
       <button
         onClick={() => {
           logout().then((response) => {
-            console.log(response);
             localStorage.removeItem("user");
             history.push("/login");
           },
-          (error) => {
-            console.log(error.message);
-          });
+          (error) => {}
+        );
         }}
       >
         Logout

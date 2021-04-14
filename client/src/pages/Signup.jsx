@@ -232,13 +232,11 @@ export default function Register() {
                 register(username, email, password).then(
                   (response) => {
                     // useHistory push to chat
-                    console.log(response);
                     setRegisterResponse("User successfully registered!");
                     setOpen(true);
                     return;
                   },
                   (error) => {
-                    console.log(error.message);
                     setSubmitting(false);
                     setStatus(error);
                     setRegisterResponse(error.message);

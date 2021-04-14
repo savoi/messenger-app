@@ -186,7 +186,7 @@ export default function Login() {
   React.useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) history.push("/dashboard");
-  }, []);
+  }, [history]);
 
   const login = useLogin();
 
@@ -246,7 +246,6 @@ export default function Login() {
                 login(email, password).then(
                   (response) => {
                     // useHistory push to chat
-                    console.log(email, password);
                     return;
                   },
                   error => {
@@ -333,7 +332,7 @@ export default function Login() {
           open={open}
           autoHideDuration={6000}
           onClose={handleClose}
-          message="Login failed"
+          message={loginResponse}
           action={
             <React.Fragment>
               <IconButton
