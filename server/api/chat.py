@@ -20,7 +20,13 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 
-from db.db import add_message, get_conversation_id, get_user_from_username
+from db.db import (
+    add_message,
+    get_all_user_conversation_previews,
+    get_conversation,
+    get_conversation_id,
+    get_user_from_username
+)
 
 chat = Blueprint('chat', __name__)
 
@@ -46,13 +52,17 @@ def messages():
         return jsonify(db_response), 500
 
 
-@chat.route('/conversations/<user>', methods=['GET'])
+@chat.route('/conversations', methods=['GET'])
+@chat.route('/conversations/<string:conversation_id>', methods=['GET'])
 @jwt_required()
-def conversations():
+def conversations(conversation_id=None):
     try:
-        current_user = get_jwt_identity()
-        response = {'current_user': current_user}
-        return jsonify(response), 200
+        if not conversation_id:
+            conversation_previews = get_all_user_conversation_previews(current_user.id)
+            return jsonify(conversation_previews), 200
+        else:
+            conversation = get_conversation(conversation_id)
+            return jsonify(conversation), 200
     except Exception as e:
-        response = {'error': {'auth': "Could not fetch user."}}
+        response = {'status': "error", 'message': "Could not retrieve conversation previews."}
         return jsonify(response), 500

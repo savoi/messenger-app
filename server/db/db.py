@@ -6,15 +6,17 @@ from mongoengine import NotUniqueError, ValidationError
 db = MongoEngine()
 
 class Message(db.EmbeddedDocument):
-    meta = {
-        'ordering': ["-created_at"]
-    }
-    conversation_id = db.ObjectIdField()
-    from_user = db.ObjectIdField()
+    conversation_id = db.ObjectIdField(
+        required = True
+    )
+    from_user = db.ObjectIdField(
+        required = True
+    )
     body = db.StringField(
         required = True
     )
     created_at = db.DateTimeField(
+        default = datetime.datetime.utcnow,
         required = True
     )
 
@@ -23,7 +25,9 @@ class Conversation(db.Document):
     users = db.ListField(db.ObjectIdField(),
         required = True
     )
-    messages = db.ListField(db.EmbeddedDocumentField(Message))
+    messages = db.SortedListField(db.EmbeddedDocumentField(Message),
+        ordering = 'created_at'
+    )
 
 
 class User(db.Document):
@@ -101,8 +105,7 @@ def add_message(user1_id, user2_id, conversation_id, message_body):
     try:
         message = Message(
             from_user = user1_id,
-            body = message_body,
-            created_at = datetime.datetime.now()
+            body = message_body
         )
         # Conversation exists
         if conversation_id:
@@ -123,5 +126,10 @@ def add_message(user1_id, user2_id, conversation_id, message_body):
     except Exception as e:
         return {'status': "error", 'message': "Error adding message to database."}
 
-def get_user_conversation_preview(user):
-    return Conversation.objects.get(users__in=user)
+# Returns the conversation with only the latest message between users
+def get_all_user_conversation_previews(user_id):
+    return Conversation.objects.fields(users=user_id, slice__messages=[-1,1])
+
+# Return full conversation between users
+def get_conversation(conversation_id):
+    return Conversation.objects.get(id=conversation_id)
