@@ -13,6 +13,7 @@ from flask_jwt_extended import (
 )
 from flask_mongoengine import MongoEngine
 from api.auth import auth
+from api.chat import chat
 from db.db import initialize_db, User
 
 config = configparser.ConfigParser()
@@ -32,6 +33,7 @@ initialize_db(app)
 jwt = JWTManager(app)
 
 app.register_blueprint(auth)
+app.register_blueprint(chat)
 
 # Refresh any token that is within 30 minutes of expiring.
 @app.after_request
@@ -47,3 +49,8 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # If JWT is invalid, return original response
         return response
+
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return User.objects.get(email=identity)
