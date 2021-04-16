@@ -31,7 +31,14 @@ class Conversation(db.Document):
 
 
 class User(db.Document):
-    meta = {'collection': "users"}
+    meta = {
+        'collection': "users",
+        'indexes': [
+            {
+                'fields': ["$username", "$email"]
+            }
+        ]
+    }
     username = db.StringField(
         required = True,
         unique = True,
@@ -133,3 +140,7 @@ def get_all_user_conversation_previews(user_id):
 # Return full conversation between users
 def get_conversation(conversation_id):
     return Conversation.objects.get(id=conversation_id)
+
+# Return a list of users matching a search string
+def search_users(search_text):
+    return User.objects.search_text(search_text).order_by('$text_score').only('username', 'email')

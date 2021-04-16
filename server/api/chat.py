@@ -25,7 +25,8 @@ from db.db import (
     get_all_user_conversation_previews,
     get_conversation,
     get_conversation_id,
-    get_user_from_username
+    get_user_from_username,
+    search_users
 )
 
 chat = Blueprint('chat', __name__)
@@ -65,4 +66,19 @@ def conversations(conversation_id=None):
             return jsonify(conversation), 200
     except Exception as e:
         response = {'status': "error", 'message': "Could not retrieve conversation previews."}
+        return jsonify(response), 500
+
+@chat.route('/users', methods=['POST'])
+@jwt_required()
+def users():
+    try:
+        search_text = request.args.get('search', None)
+        if search_text:
+            users = search_users(search_text)
+            return jsonify(users), 200
+        else:
+            response = {'status': "error", 'message': "A search string is required."}
+            return jsonify(response), 400
+    except Exception as e:
+        response = {'status': "error", 'message': "Could not retrieve users."}
         return jsonify(response), 500
