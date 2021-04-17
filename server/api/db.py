@@ -3,7 +3,7 @@ import datetime
 from flask_mongoengine import DoesNotExist, MongoEngine
 from mongoengine import NotUniqueError, ValidationError
 
-db = MongoEngine()
+from api import database as db
 
 class Message(db.EmbeddedDocument):
     conversation_id = db.ObjectIdField(
@@ -55,9 +55,6 @@ class User(db.Document):
     profile_photo = db.ImageField(
         size = (800, 800, True)
     )
-
-def initialize_db(app):
-    db.init_app(app)
 
 # Return a `user` document from the db
 def get_user(email):

@@ -20,7 +20,7 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 
-from db.db import (
+from api.db import (
     add_message,
     get_all_user_conversation_previews,
     get_conversation,
@@ -71,6 +71,7 @@ def conversations(conversation_id=None):
 @chat.route('/users', methods=['POST'])
 @jwt_required()
 def users():
+    import pdb; pdb.set_trace()
     try:
         search_text = request.args.get('search', None)
         if search_text:

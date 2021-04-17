@@ -19,7 +19,7 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 
-from db.db import add_user, get_user
+from api.db import add_user, get_user
 
 auth = Blueprint('auth', __name__)
 
@@ -72,7 +72,7 @@ def login():
         return jsonify({'error': str(e)}), 400
 
     # Check if user exists
-    AUTH_ERROR = {'error': {'auth': "The email/password is incorrect."}}
+    AUTH_ERROR = {'status': "error", 'message': "The email/password is incorrect."}
     user = get_user(email)
     if not user:
         return jsonify(AUTH_ERROR), 422
