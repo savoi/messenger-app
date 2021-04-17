@@ -12,17 +12,18 @@
    $ mongorestore --gzip --archive=sample_db_dump.gz --nsInclude="messenger.*"
    ```
 
-## .env Setup
+## env and config Setup
 
-1. Copy the file .env.sample to .env and in the new file, enter a secret key in
-   the [SECRET_KEY] entry of the [JWT] section. Generate a new key with the
-   command:
+1. Copy the file .env.sample to .env
+
+2. Copy config.py.sample to config.py and in the new file, enter a secret key in
+   the `JWT_SECRET_KEY` entry. Generate a new key with the command:
 
    ```
    $ python -c 'import os; print(os.urandom(16))'
    ```
-2. Set ACCESS_TOKEN_EXPIRES to the number of hours you would like the JWT to be
-   valid for.
+3. Set ACCESS_TOKEN_EXPIRES to the number of hours you would like the JWT to be
+   valid.
 
 ## Starting the server:
 
@@ -38,5 +39,5 @@
    following command to run the unit tests:
 
    ```
-   $ python -m unittest discover -s test -v
+   $ pytest
    ```
