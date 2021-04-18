@@ -5,56 +5,9 @@ from mongoengine import NotUniqueError, ValidationError
 
 from api import database as db
 
-class Message(db.EmbeddedDocument):
-    conversation_id = db.ObjectIdField(
-        required = True
-    )
-    from_user = db.ObjectIdField(
-        required = True
-    )
-    body = db.StringField(
-        required = True
-    )
-    created_at = db.DateTimeField(
-        default = datetime.datetime.utcnow,
-        required = True
-    )
-
-class Conversation(db.Document):
-    meta = {'collection': "conversations"}
-    users = db.ListField(db.ObjectIdField(),
-        required = True
-    )
-    messages = db.SortedListField(db.EmbeddedDocumentField(Message),
-        ordering = 'created_at'
-    )
-
-
-class User(db.Document):
-    meta = {
-        'collection': "users",
-        'indexes': [
-            {
-                'fields': ["$username", "$email"]
-            }
-        ]
-    }
-    username = db.StringField(
-        required = True,
-        unique = True,
-        min_length = 2,
-        max_length = 50
-    )
-    email = db.EmailField(
-        required = True,
-        unique = True
-    )
-    password = db.StringField(
-        required = True
-    )
-    profile_photo = db.ImageField(
-        size = (800, 800, True)
-    )
+from api.models.conversation import Conversation
+from api.models.message import Message
+from api.models.user import User
 
 # Return a `user` document from the db
 def get_user(email):
