@@ -71,7 +71,6 @@ def conversations(conversation_id=None):
 @chat.route('/users', methods=['POST'])
 @jwt_required()
 def users():
-    import pdb; pdb.set_trace()
     try:
         search_text = request.args.get('search', None)
         if search_text:
