@@ -1,7 +1,7 @@
 import pytest
 from datetime import timedelta
 from api import create_app
-from api.db import User
+from api.models.user import User
 from flask_jwt_extended import create_access_token, get_csrf_token, JWTManager
 from mongoengine import connect, disconnect
 

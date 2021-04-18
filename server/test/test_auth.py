@@ -2,7 +2,7 @@ from flask import url_for
 from mongoengine import connect, disconnect
 import json
 
-from api.db import User
+from api.models.user import User
 
 def test_register_user_success(client):
     new_user = {

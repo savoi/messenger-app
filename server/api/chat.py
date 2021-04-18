@@ -20,14 +20,17 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 
-from api.db import (
-    add_message,
-    get_all_user_conversation_previews,
-    get_conversation,
-    get_conversation_id,
-    get_user_from_username,
-    search_users
-)
+from api.models.conversation import Message
+add_message = Message.add_message
+
+from api.models.conversation import Conversation
+get_all_user_conversation_previews = Conversation.get_all_user_conversation_previews
+get_conversation = Conversation.get_conversation
+get_conversation_id = Conversation.get_conversation_id
+
+from api.models.user import User
+get_user_from_username = User.get_user_from_username
+search_users = User.search_users
 
 chat = Blueprint('chat', __name__)
 

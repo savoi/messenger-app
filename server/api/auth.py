@@ -19,7 +19,9 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 
-from api.db import add_user, get_user
+from api.models.user import User
+add_user = User.add_user
+get_user = User.get_user
 
 auth = Blueprint('auth', __name__)
 

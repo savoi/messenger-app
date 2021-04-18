@@ -34,7 +34,7 @@ def create_app(test_config=None):
 
     from api.auth import auth
     from api.chat import chat
-    from api.db import User
+    from api.models.user import User
 
     app.register_blueprint(auth)
     app.register_blueprint(chat)

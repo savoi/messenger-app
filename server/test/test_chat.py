@@ -2,7 +2,8 @@ from flask import url_for
 from mongoengine import connect, disconnect
 import json
 
-from api.db import User, Message
+from api.models.conversation import Message
+from api.models.user import User
 
 def test_add_new_message_success(client, tokens):
     new_message = {
