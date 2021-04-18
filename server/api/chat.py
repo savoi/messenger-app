@@ -48,7 +48,7 @@ def messages():
     if not dest_user:
         return jsonify({'status': "error", 'message': "Dest user does not exist."}), 400
 
-    conversation_id = get_conversation_id(current_user.id, dest_user.id)
+    conversation_id = get_conversation_id([current_user.id, dest_user.id])
     db_response = add_message(current_user.id, dest_user.id, conversation_id, message_body)
     if db_response['status'] == "success":
         return jsonify(db_response), 201

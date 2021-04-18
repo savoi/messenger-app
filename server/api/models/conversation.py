@@ -67,9 +67,9 @@ class Conversation(db.Document):
         return Conversation.objects.get(id=conversation_id)
 
     @staticmethod
-    def get_conversation_id(user1_id, user2_id):
+    def get_conversation_id(user_ids=[]):
         try:
-            conversation = Conversation.objects.get(users__all=[user1_id, user2_id])
+            conversation = Conversation.objects.get(users__all=user_ids)
             return conversation.id
         except DoesNotExist as dne:
             return None
