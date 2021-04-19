@@ -71,7 +71,7 @@ def conversations(conversation_id=None):
         response = {'status': "error", 'message': "Could not retrieve conversation previews."}
         return jsonify(response), 500
 
-@chat.route('/users', methods=['POST'])
+@chat.route('/users', methods=['GET'])
 @jwt_required()
 def users():
     try:
