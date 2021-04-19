@@ -31,7 +31,7 @@ class User(db.Document):
     )
 
     @staticmethod
-    def add_user(username, email, hashedpw):
+    def add(username, email, hashedpw):
         try:
             new_user = User(
                 username=username,
@@ -53,14 +53,14 @@ class User(db.Document):
             return {"error": {'error': str(e)}}
 
     @staticmethod
-    def get_user(email):
+    def get(email):
         try:
             return User.objects.get(email=email)
         except DoesNotExist:
             return None
 
     @staticmethod
-    def get_user_from_username(username):
+    def get_from_username(username):
         try:
             return User.objects.get(username=username)
         except DoesNotExist:
@@ -68,7 +68,7 @@ class User(db.Document):
 
     # Return a list of users matching a search string
     @staticmethod
-    def search_users(search_text):
+    def search(search_text):
         return User.objects.search_text(
             search_text
         ).order_by(

@@ -30,7 +30,7 @@ class Message(db.EmbeddedDocument):
     )
 
     @staticmethod
-    def add_message(from_user_id, to_user_id, conversation_id, message_body):
+    def add(from_user_id, to_user_id, conversation_id, message_body):
         try:
             message = Message(
                 from_user=from_user_id,
@@ -72,21 +72,23 @@ class Conversation(db.Document):
 
     # Returns the conversation with only the latest message between users
     @staticmethod
-    def get_all_user_conversation_previews(user_id):
-        return Conversation.objects.fields(
-            users=user_id, slice__messages=[-1, 1]
+    def get_previews(user_id):
+        return Conversation.objects(
+            users__in=[user_id]
+        ).fields(
+            slice__messages=[-1, 1]
         )
 
     # Return full conversation between users
     @staticmethod
-    def get_conversation(conversation_id, user_id):
+    def get(conversation_id, user_id):
         return Conversation.objects.get(
             id=conversation_id,
             users__in=[user_id]
         )
 
     @staticmethod
-    def get_conversation_id(user_ids=[]):
+    def get_id(user_ids=[]):
         try:
             conversation = Conversation.objects.get(users__all=user_ids)
             return conversation.id

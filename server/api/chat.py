@@ -5,13 +5,6 @@ from api.models.conversation import Message
 from api.models.conversation import Conversation
 from api.models.user import User
 
-add_message = Message.add_message
-get_conversation_previews = Conversation.get_all_user_conversation_previews
-get_conversation = Conversation.get_conversation
-get_conversation_id = Conversation.get_conversation_id
-get_user_from_username = User.get_user_from_username
-search_users = User.search_users
-
 chat = Blueprint('chat', __name__)
 
 ERROR_RECIPIENT_DOES_NOT_EXIST = {
@@ -42,12 +35,12 @@ def messages():
     except Exception as e:
         return jsonify({'status': "error", 'message': repr(e)}), 400
 
-    to_user = get_user_from_username(to_username)
+    to_user = User.get_from_username(to_username)
     if not to_user:
         return jsonify(ERROR_RECIPIENT_DOES_NOT_EXIST), 400
 
-    conversation_id = get_conversation_id([current_user.id, to_user.id])
-    db_response = add_message(
+    conversation_id = Conversation.get_id([current_user.id, to_user.id])
+    db_response = Message.add(
         current_user.id, to_user.id, conversation_id, message_body
     )
     if db_response['status'] == "success":
@@ -62,10 +55,10 @@ def messages():
 def conversations(conversation_id=None):
     try:
         if not conversation_id:
-            conversation_previews = get_conversation_previews(current_user.id)
+            conversation_previews = Conversation.get_previews(current_user.id)
             return jsonify(conversation_previews), 200
         else:
-            conversation = get_conversation(conversation_id, current_user.id)
+            conversation = Conversation.get(conversation_id, current_user.id)
             return jsonify(conversation), 200
     except Exception:
         return jsonify(ERROR_GET_CONVERSATION_PREVIEWS), 500
@@ -77,7 +70,7 @@ def users():
     try:
         search_text = request.args.get('search')
         if search_text:
-            users = search_users(search_text)
+            users = User.search(search_text)
             return jsonify(users), 200
         else:
             return jsonify(ERROR_EMPTY_SEARCH_STRING), 400

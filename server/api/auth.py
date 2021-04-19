@@ -11,9 +11,6 @@ from flask_jwt_extended import (
 
 from api.models.user import User
 
-add_user = User.add_user
-get_user = User.get_user
-
 auth = Blueprint('auth', __name__)
 
 ERROR_BAD_AUTH = {
@@ -63,7 +60,7 @@ def register():
 
     # Attempt to add user to db. Hash and salted pass.
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    add_user_response = add_user(username, email, hashed_password)
+    add_user_response = User.add(username, email, hashed_password)
     if 'error' in add_user_response:
         errors.update(add_user_response['error'])
 
@@ -71,7 +68,7 @@ def register():
         return jsonify({'error': errors}), 422
     else:
         try:
-            user = get_user(email)
+            user = User.get(email)
             response = jsonify(SUCCESS_REGISTER)
             access_token = create_access_token(identity=user.email)
             set_access_cookies(response, access_token)
@@ -92,7 +89,7 @@ def login():
         return jsonify({'error': str(e)}), 400
 
     # Check if user exists
-    user = get_user(email)
+    user = User.get(email)
     if not user:
         return jsonify(ERROR_BAD_AUTH), 422
 
