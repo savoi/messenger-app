@@ -5,6 +5,7 @@ from api.models.user import User
 from flask_jwt_extended import create_access_token, get_csrf_token, JWTManager
 from mongoengine import connect, disconnect
 
+
 @pytest.fixture
 def app():
     app = create_app({
@@ -19,9 +20,17 @@ def app():
     with app.app_context():
         disconnect()
         db = connect('test', host='mongomock://localhost')
-        test_user1 = User(username='bill', email='bill@mail.com', password='password')
+        test_user1 = User(
+            username='bill',
+            email='bill@mail.com',
+            password='password'
+        )
         test_user1.save()
-        test_user2 = User(username='test_user', email='test_user@mail.com', password='password')
+        test_user2 = User(
+            username='test_user',
+            email='test_user@mail.com',
+            password='password'
+        )
         test_user2.save()
         jwt = JWTManager()
         jwt.init_app(app)
@@ -37,9 +46,11 @@ def app():
     db.drop_database('test')
     disconnect()
 
+
 @pytest.fixture
 def client(app):
     return app.test_client()
+
 
 @pytest.fixture
 def tokens(app, client):

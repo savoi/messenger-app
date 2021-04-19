@@ -1,9 +1,5 @@
-from flask import url_for
-from mongoengine import connect, disconnect
 import json
 
-from api.models.conversation import Message
-from api.models.user import User
 
 def test_add_new_message_success(client, tokens):
     new_message = {
@@ -14,7 +10,7 @@ def test_add_new_message_success(client, tokens):
     response = client.post(
         '/messages',
         data=json.dumps(new_message),
-        headers = {
+        headers={
             'X-CSRF-TOKEN': tokens[1]
         },
         mimetype='application/json'
@@ -22,7 +18,9 @@ def test_add_new_message_success(client, tokens):
     assert response.status_code == 201
     assert response.json['message'] == "Message added successfully."
 
+
 def test_add_new_message_recipient_does_not_exist(client, tokens):
+    RECIPIENT_DOES_NOT_EXIST_MSG = "The message recipient user does not exist."
     new_message = {
         'to_username': "wesley",
         'body': "Hi! How are you?"
@@ -31,15 +29,17 @@ def test_add_new_message_recipient_does_not_exist(client, tokens):
     response = client.post(
         '/messages',
         data=json.dumps(new_message),
-        headers = {
+        headers={
             'X-CSRF-TOKEN': tokens[1]
         },
         mimetype='application/json'
     )
     assert response.status_code == 400
-    assert response.json['message'] == "The message recipient user does not exist."
+    assert response.json['message'] == RECIPIENT_DOES_NOT_EXIST_MSG
+
 
 def test_get_conversation_preview(client, tokens):
+
     messages = [
         {
             'to_username': "bill",
@@ -60,7 +60,7 @@ def test_get_conversation_preview(client, tokens):
         response = client.post(
             '/messages',
             data=json.dumps(message),
-            headers = {
+            headers={
                 'X-CSRF-TOKEN': tokens[1]
             },
             mimetype='application/json'
@@ -69,10 +69,10 @@ def test_get_conversation_preview(client, tokens):
     client.set_cookie('127.0.0.1', 'access_token_cookie', tokens[0])
     response = client.get(
         '/conversations',
-        headers = {
+        headers={
             'X-CSRF-TOKEN': tokens[1]
         },
         mimetype='application/json'
     )
     assert response.status_code == 200
-    assert response.json[0]['messages'][0]['body'] == "Why won't you answer me??"
+    assert response.json[0]['messages'][0]['body'] == messages[2]['body']

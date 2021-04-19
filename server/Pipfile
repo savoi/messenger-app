@@ -13,7 +13,6 @@ flask = "*"
 bcrypt = "*"
 flask-mongoengine = "*"
 pillow = "*"
-is-safe-url = "*"
 flask-jwt-extended = "*"
 python-dotenv = "*"
 
