@@ -75,7 +75,7 @@ def conversations(conversation_id=None):
 @jwt_required()
 def users():
     try:
-        search_text = request.args.get('search', None)
+        search_text = request.args.get('search')
         if search_text:
             users = search_users(search_text)
             return jsonify(users), 200
