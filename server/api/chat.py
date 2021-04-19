@@ -39,17 +39,17 @@ chat = Blueprint('chat', __name__)
 def messages():
     try:
         post_data = request.get_json()
-        dest_username = post_data.get('dest_username')
-        message_body = post_data.get('body')
+        to_username = post_data['to_username']
+        message_body = post_data['body']
     except Exception as e:
-        return jsonify({'status': "error", 'message': str(e)}), 400
+        return jsonify({'status': "error", 'message': repr(e)}), 400
 
-    dest_user = get_user_from_username(dest_username)
-    if not dest_user:
-        return jsonify({'status': "error", 'message': "Dest user does not exist."}), 400
+    to_user = get_user_from_username(to_username)
+    if not to_user:
+        return jsonify({'status': "error", 'message': "The message recipient user does not exist."}), 400
 
-    conversation_id = get_conversation_id([current_user.id, dest_user.id])
-    db_response = add_message(current_user.id, dest_user.id, conversation_id, message_body)
+    conversation_id = get_conversation_id([current_user.id, to_user.id])
+    db_response = add_message(current_user.id, to_user.id, conversation_id, message_body)
     if db_response['status'] == "success":
         return jsonify(db_response), 201
     else:

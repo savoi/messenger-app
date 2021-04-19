@@ -7,7 +7,7 @@ from api.models.user import User
 
 def test_add_new_message_success(client, tokens):
     new_message = {
-        'dest_username': "bill",
+        'to_username': "bill",
         'body': "Hi! How are you?"
     }
     client.set_cookie('127.0.0.1', 'access_token_cookie', tokens[0])
@@ -24,7 +24,7 @@ def test_add_new_message_success(client, tokens):
 
 def test_add_new_message_recipient_does_not_exist(client, tokens):
     new_message = {
-        'dest_username': "wesley",
+        'to_username': "wesley",
         'body': "Hi! How are you?"
     }
     client.set_cookie('127.0.0.1', 'access_token_cookie', tokens[0])
@@ -37,20 +37,20 @@ def test_add_new_message_recipient_does_not_exist(client, tokens):
         mimetype='application/json'
     )
     assert response.status_code == 400
-    assert response.json['message'] == "Dest user does not exist."
+    assert response.json['message'] == "The message recipient user does not exist."
 
 def test_get_conversation_preview(client, tokens):
     messages = [
         {
-            'dest_username': "bill",
+            'to_username': "bill",
             'body': "Hi! How are you?"
         },
         {
-            'dest_username': "bill",
+            'to_username': "bill",
             'body': "Are you still there?"
         },
         {
-            'dest_username': "bill",
+            'to_username': "bill",
             'body': "Why won't you answer me??"
         }
     ]
