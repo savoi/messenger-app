@@ -79,13 +79,10 @@ class Conversation(db.Document):
             slice__messages=[-1, 1]
         )
 
-    # Return full conversation between users
+    # Return full conversation
     @staticmethod
-    def get(conversation_id, user_id):
-        return Conversation.objects.get(
-            id=conversation_id,
-            users__in=[user_id]
-        )
+    def get(conversation_id):
+        return Conversation.objects.get(id=conversation_id)
 
     @staticmethod
     def get_id(user_ids=[]):

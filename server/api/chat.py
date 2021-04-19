@@ -23,6 +23,10 @@ ERROR_CANT_GET_USERS = {
     'status': "error",
     'message': "Could not retrieve users."
 }
+ERROR_UNAUTHORIZED_ACCESS = {
+    'status': "error",
+    'message': "Unauthorized access to conversation."
+}
 
 
 @chat.route('/messages', methods=['POST'])
@@ -58,8 +62,11 @@ def conversations(conversation_id=None):
             conversation_previews = Conversation.get_previews(current_user.id)
             return jsonify(conversation_previews), 200
         else:
-            conversation = Conversation.get(conversation_id, current_user.id)
-            return jsonify(conversation), 200
+            conversation = Conversation.get(conversation_id)
+            if current_user.id in conversation.users:
+                return jsonify(conversation), 200
+            else:
+                return jsonify(ERROR_UNAUTHORIZED_ACCESS), 401
     except Exception:
         return jsonify(ERROR_GET_CONVERSATION_PREVIEWS), 500
 
