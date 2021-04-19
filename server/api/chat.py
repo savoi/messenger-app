@@ -65,7 +65,7 @@ def conversations(conversation_id=None):
             conversation_previews = get_all_user_conversation_previews(current_user.id)
             return jsonify(conversation_previews), 200
         else:
-            conversation = get_conversation(conversation_id)
+            conversation = get_conversation(conversation_id, current_user.id)
             return jsonify(conversation), 200
     except Exception as e:
         response = {'status': "error", 'message': "Could not retrieve conversation previews."}

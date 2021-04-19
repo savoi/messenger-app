@@ -63,8 +63,8 @@ class Conversation(db.Document):
 
     # Return full conversation between users
     @staticmethod
-    def get_conversation(conversation_id):
-        return Conversation.objects.get(id=conversation_id)
+    def get_conversation(conversation_id, user_id):
+        return Conversation.objects.get(id=conversation_id, users__in=[user_id])
 
     @staticmethod
     def get_conversation_id(user_ids=[]):
