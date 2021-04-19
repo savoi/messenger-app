@@ -21,24 +21,24 @@ class Message(db.EmbeddedDocument):
     )
 
     @staticmethod
-    def add_message(user1_id, user2_id, conversation_id, message_body):
+    def add_message(from_user_id, to_user_id, conversation_id, message_body):
         try:
             message = Message(
-                from_user = user1_id,
+                from_user = from_user_id,
                 body = message_body
             )
-            # Conversation exists
-            if conversation_id:
-                message.conversation_id = conversation_id
-                conversation = Conversation.objects.get(id=conversation_id)
             # Need to create new conversation
-            else:
+            if not conversation_id:
                 conversation = Conversation(
-                    users = [user1_id, user2_id],
+                    users = [from_user_id, to_user_id],
                     messages = []
                 )
                 conversation.save()
                 message.conversation_id = conversation.id
+            # Conversation exists
+            else:
+                message.conversation_id = conversation_id
+                conversation = Conversation.objects.get(id=conversation_id, users__all=[from_user_id, to_user_id])
             # Push message and save conversation
             conversation.update(push__messages=message)
             conversation.save()
