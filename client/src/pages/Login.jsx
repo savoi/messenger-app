@@ -147,7 +147,7 @@ function useLogin() {
     })
     const jsonResponse = await response.json();
     if (!response.ok) {
-      throw new Error(jsonResponse.error.message);
+      throw new Error(jsonResponse.message);
     } else {
       const userResponse = await makeRequestWithJWT('/user');
       localStorage.setItem("user", userResponse['current_user']);

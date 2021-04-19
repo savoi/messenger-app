@@ -5,14 +5,16 @@ verify_ssl = true
 
 [dev-packages]
 mongomock = "*"
+pytest = "*"
+coverage = "*"
 
 [packages]
 flask = "*"
 bcrypt = "*"
 flask-mongoengine = "*"
 pillow = "*"
-is-safe-url = "*"
 flask-jwt-extended = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"
