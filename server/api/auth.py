@@ -61,11 +61,11 @@ def register():
     # Attempt to add user to db. Hash and salted pass.
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     add_user_response = User.add(username, email, hashed_password)
-    if 'error' in add_user_response:
-        errors.update(add_user_response['error'])
+    if add_user_response['status'] == "error":
+        errors.update(add_user_response)
 
     if len(errors.keys()) != 0:
-        return jsonify({'error': errors}), 422
+        return jsonify(errors), 422
     else:
         try:
             user = User.get(email)
@@ -119,7 +119,7 @@ def logout():
         return jsonify(ERROR_LOGOUT), 500
 
 
-@auth.route('/user', methods=['POST'])
+@auth.route('/user', methods=['GET'])
 @jwt_required()
 def user():
     try:

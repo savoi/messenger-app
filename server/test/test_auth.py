@@ -43,7 +43,7 @@ def test_register_email_already_exists(client):
     assert response1.status_code == 201
     assert response1.json['message'] == "User successfully registered!"
     assert response2.status_code == 422
-    assert response2.json['error']['status'] == "error"
+    assert response2.json['status'] == "error"
 
 
 def test_register_username_already_exists(client):
@@ -70,7 +70,7 @@ def test_register_username_already_exists(client):
     assert response1.status_code == 201
     assert response1.json['message'] == "User successfully registered!"
     assert response2.status_code == 422
-    assert response2.json['error']['status'] == "error"
+    assert response2.json['status'] == "error"
 
 
 def test_register_missing_email(client):
@@ -86,7 +86,7 @@ def test_register_missing_email(client):
         mimetype='application/json'
     )
     assert response.status_code == 422
-    assert response.json['error']['validation_error'] == ER_MSG
+    assert response.json['message'] == ER_MSG
 
 
 def test_register_username_too_short(client):
