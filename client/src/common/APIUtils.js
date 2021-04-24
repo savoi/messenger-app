@@ -19,10 +19,9 @@ async function makeRequestWithJWT(method, apiEndpoint, postData) {
 }
 
 export async function getWithJWT(apiEndpoint) {
-  const result = await makeRequestWithJWT('get', apiEndpoint, null);
-  return result;
+  return await makeRequestWithJWT('get', apiEndpoint, null);
 }
 
 export async function postWithJWT(apiEndpoint, postData) {
-  const result = await makeRequestWithJWT('post', apiEndpoint, postData);
+  return await makeRequestWithJWT('post', apiEndpoint, postData);
 }

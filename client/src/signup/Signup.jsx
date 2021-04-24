@@ -4,17 +4,18 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
-import Hidden from "@material-ui/core/Hidden";
 import Snackbar from "@material-ui/core/Snackbar";
-import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { Formik } from "formik";
 import Typography from "@material-ui/core/Typography";
 import { signupSchema } from "./signupSchemas";
-import useStyles from "./SignupStyles";
 import useAuth from './../common/useAuth';
+import AuthSideBanner from "./../common/AuthSideBanner";
+import AuthHeaderButtons from "./../common/AuthHeaderButtons";
+import AuthWelcomeMessage from "./../common/AuthWelcomeMessage";
+import useStyles from "./../common/AuthStyles";
 
 
 export default function Register() {
@@ -36,46 +37,13 @@ export default function Register() {
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
-        <Box className={classes.overlay}>
-          <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" alt="Chat bubble" />
-            <Hidden smDown>
-              <Typography className={classes.heroText}>
-                Converse with anyone with any language
-              </Typography>
-            </Hidden>
-          </Hidden>
-        </Box>
+        <AuthSideBanner />
       </Grid>
       <Grid item xs={12} sm={8} md={7} elevation={6} component={Paper} square>
         <Box className={classes.buttonHeader}>
-          <Box p={1} alignSelf="flex-end" alignItems="center">
-            <Link to="/login" className={classes.link}>
-              <Button className={classes.noAccBtn}>
-                Already have an account?
-              </Button>
-              <Button
-                color="default"
-                className={classes.accBtn}
-                variant="contained"
-              >
-                Login
-              </Button>
-            </Link>
-          </Box>
-
+          <AuthHeaderButtons page="signup" />
           <Box width="100%" maxWidth={450} p={3} alignSelf="center">
-            <Grid container>
-              <Grid item xs>
-                <Typography
-                  className={classes.welcome}
-                  component="h1"
-                  variant="h5"
-                >
-                  Create an account
-                </Typography>
-              </Grid>
-            </Grid>
+            <AuthWelcomeMessage page="signup" />
             <Formik
               initialValues={{
                 username: "",

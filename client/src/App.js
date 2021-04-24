@@ -9,8 +9,6 @@ import { UserContext } from './common/UserContext';
 import useCheckUser from './common/useCheckUser';
 import ProtectedRoute from "./common/ProtectedRoute";
 
-import "./App.css";
-
 function App() {
   const { user, setUser, isLoading } = useCheckUser();
 

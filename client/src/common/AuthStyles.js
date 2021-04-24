@@ -7,13 +7,16 @@ const useStyles = makeStyles(theme => ({
       borderBottom: "1.2px solid rgba(0, 0, 0, 0.2)"
     }
   },
-  welcome: {
-    fontSize: 26,
-    paddingBottom: 20,
-    color: "#000000",
-    fontWeight: 700,
-    fontFamily: "'Open Sans'"
+  buttonHeader: {
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    flexDirection: "column",
+    bgcolor: "background.paper",
+    minHeight: "100vh",
+    paddingTop: 23
   },
+  label: { fontSize: 19, color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
   heroText: {
     fontSize: 26,
     fontFamily: "'Open Sans'",
@@ -34,16 +37,18 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center"
   },
-  buttonHeader: {
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    flexDirection: "column",
-    bgcolor: "background.paper",
-    minHeight: "100vh",
-    paddingTop: 23
+  link: { textDecoration: "none", display: "flex", flexWrap: "nowrap" },
+  noAccBtn: {
+    fontSize: 14,
+    color: "#b0b0b0",
+    fontWeight: 400,
+    textAlign: "center",
+    marginRight: 21,
+    whiteSpace: "nowrap"
   },
   accBtn: {
+    fontSize: 14,
+    fontWeight: 600,
     width: 170,
     height: 54,
     borderRadius: 5,
@@ -53,13 +58,23 @@ const useStyles = makeStyles(theme => ({
     boxShadow: "none",
     marginRight: 35
   },
-  noAccBtn: {
+  welcome: {
+    fontSize: 26,
+    paddingBottom: 20,
+    color: "#000000",
+    fontWeight: 600
+  },
+  inputs: {
+    marginTop: ".8rem",
+    height: "2rem",
+    padding: "5px",
     fontSize: 14,
-    color: "#b0b0b0",
-    fontWeight: 400,
-    textAlign: "center",
-    marginRight: 21,
-    whiteSpace: "nowrap"
+    fontWeight: 600
+  },
+  forgot: {
+    paddingRight: 10,
+    color: "#3a8dff",
+    fontSize: 12
   },
   image: {
     backgroundImage: "url(./images/bg-img.png)",
@@ -67,21 +82,10 @@ const useStyles = makeStyles(theme => ({
     backgroundSize: "cover",
     backgroundPosition: "center"
   },
-  box: {
-    padding: 24,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    flexDirection: "column",
-    maxWidth: 900,
-    margin: "auto"
-  },
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1)
   },
-  label: { fontSize: 19, color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
   submit: {
     margin: theme.spacing(3, 2, 2),
     padding: 10,
@@ -90,15 +94,8 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 3,
     marginTop: 49,
     fontSize: 16,
-    backgroundColor: "#3a8dff",
-    fontWeight: "bold"
-  },
-  inputs: {
-    marginTop: ".8rem",
-    height: "2rem",
-    padding: "5px"
-  },
-  link: { textDecoration: "none", display: "flex", flexWrap: "nowrap" }
+    backgroundColor: "#3a8dff"
+  }
 }));
 
 export default useStyles;
