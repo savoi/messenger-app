@@ -8,6 +8,7 @@ import Dashboard from "./dashboard/Dashboard";
 import { UserContext } from './common/UserContext';
 import useCheckUser from './common/useCheckUser';
 import ProtectedRoute from "./common/ProtectedRoute";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 function App() {
   const { user, setUser, isLoading } = useCheckUser();
@@ -15,13 +16,15 @@ function App() {
   return (
     <UserContext.Provider value={{ user, setUser, isLoading }}>
       <MuiThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={Signup} />
-          <ProtectedRoute exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/" component={Login}>
-          </Route>
-        </BrowserRouter>
+        <CssBaseline>
+          <BrowserRouter>
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={Signup} />
+            <ProtectedRoute exact path="/dashboard" component={Dashboard} />
+            <Route exact path="/" component={Login}>
+            </Route>
+          </BrowserRouter>
+      </CssBaseline>
       </MuiThemeProvider>
     </UserContext.Provider>
   );
