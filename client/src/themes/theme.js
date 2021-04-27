@@ -8,7 +8,7 @@ export const theme = createMuiTheme({
     fontFamily: [
       '"Open Sans"',
       'sans-serif'
-    ],
+    ].join(','),
     fontSize: 14,
     fontWeight: 600
   },
