@@ -2,7 +2,7 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
-import useStyles from "./AuthStyles";
+import useStyles from "styles/AuthStyles";
 
 const AuthHeaderButtons = ({page}) => {
   const classes = useStyles();

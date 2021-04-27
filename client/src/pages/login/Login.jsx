@@ -8,23 +8,23 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import { Formik } from "formik";
+import { Formik, Form } from "formik";
 import Typography from "@material-ui/core/Typography";
-import { signupSchema } from "./signupSchemas";
-import useAuth from './../common/useAuth';
-import AuthSideBanner from "./../common/AuthSideBanner";
-import AuthHeaderButtons from "./../common/AuthHeaderButtons";
-import AuthWelcomeMessage from "./../common/AuthWelcomeMessage";
-import useStyles from "./../common/AuthStyles";
+import { loginSchema } from "./LoginSchemas";
+import useAuth from 'hooks/useAuth';
+import AuthSideBanner from "components/auth/AuthSideBanner";
+import AuthHeaderButtons from "components/auth/AuthHeaderButtons";
+import AuthWelcomeMessage from "components/auth/AuthWelcomeMessage";
+import useStyles from "styles/AuthStyles";
 
 
-export default function Register() {
+export default function Login() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const { registerUser, error } = useAuth();
+  const { loginUser, error } = useAuth();
 
   const handleSubmit = async (values) => {
-    await registerUser(values);
+    await loginUser(values)
     setOpen(true);
   }
 
@@ -41,45 +41,17 @@ export default function Register() {
       </Grid>
       <Grid item xs={12} sm={8} md={7} elevation={6} component={Paper} square>
         <Box className={classes.buttonHeader}>
-          <AuthHeaderButtons page="signup" />
+          <AuthHeaderButtons page="login" />
           <Box width="100%" maxWidth={450} p={3} alignSelf="center">
-            <AuthWelcomeMessage page="signup" />
+            <AuthWelcomeMessage page="login" />
             <Formik
-              initialValues={{
-                username: "",
-                email: "",
-                password: ""
-              }}
-              validationSchema={signupSchema}
+              initialValues={{ email: '', password: '' }}
+              validationSchema={loginSchema}
               onSubmit={handleSubmit}
             >
               {({ handleSubmit, handleChange, values, touched, errors }) => (
-                <form
-                  onSubmit={handleSubmit}
-                  className={classes.form}
-                  noValidate
+                <Form className={classes.form}
                 >
-                  <TextField
-                    id="username"
-                    label={
-                      <Typography className={classes.label}>
-                        Username
-                      </Typography>
-                    }
-                    fullWidth
-                    margin="normal"
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    InputProps={{ classes: { input: classes.inputs } }}
-                    name="username"
-                    autoComplete="username"
-                    autoFocus
-                    helperText={touched.username ? errors.username : ""}
-                    error={touched.username && Boolean(errors.username)}
-                    value={values.username}
-                    onChange={handleChange}
-                  />
                   <TextField
                     id="email"
                     label={
@@ -95,6 +67,7 @@ export default function Register() {
                     InputProps={{ classes: { input: classes.inputs } }}
                     name="email"
                     autoComplete="email"
+                    autoFocus
                     helperText={touched.email ? errors.email : ""}
                     error={touched.email && Boolean(errors.email)}
                     value={values.email}
@@ -113,7 +86,12 @@ export default function Register() {
                       shrink: true
                     }}
                     InputProps={{
-                      classes: { input: classes.inputs }
+                      classes: { input: classes.inputs },
+                      endAdornment: (
+                        <Typography className={classes.forgot}>
+                          Forgot?
+                        </Typography>
+                      )
                     }}
                     type="password"
                     autoComplete="current-password"
@@ -131,10 +109,12 @@ export default function Register() {
                       color="primary"
                       className={classes.submit}
                     >
-                      Create
+                      Login
                     </Button>
                   </Box>
-                </form>
+
+                  <div style={{ height: 95 }} />
+                </Form>
               )}
             </Formik>
           </Box>

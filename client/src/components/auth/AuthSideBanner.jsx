@@ -2,7 +2,7 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
 import Typography from "@material-ui/core/Typography";
-import useStyles from "./AuthStyles";
+import useStyles from "styles/AuthStyles";
 
 const AuthSideBanner = () => {
   const classes = useStyles();

@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import { UserContext } from '../common/UserContext';
-import useAuth from './../common/useAuth';
+import { UserContext } from 'contexts/UserContext';
+import useAuth from 'hooks/useAuth';
 
 
 export default function Dashboard() {

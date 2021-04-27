@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWithJWT } from "./APIUtils"
+import { getWithJWT } from "api/APIUtils"
 
 export default function useCheckUser() {
     const [user, setUser] = useState(null);

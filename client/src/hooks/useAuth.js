@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { UserContext } from './UserContext';
-import { getWithJWT } from "./APIUtils";
+import { UserContext } from 'contexts/UserContext';
+import { getWithJWT } from "api/APIUtils";
 
 export default function useAuth() {
   let history = useHistory();
