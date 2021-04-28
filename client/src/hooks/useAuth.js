@@ -39,7 +39,12 @@ export default function useAuth() {
      })
      .then(response => {
        if (!response.ok) {
-         return response.json().then(json => { throw json; });
+         const contentType = response.headers.get("content-type");
+         if (contentType && contentType.indexOf("application/json") !== -1) {
+           return response.json().then(json => { throw json; });
+         } else {
+           throw Error("Server error.");
+         }
        }
        return response;
      })
@@ -62,7 +67,12 @@ export default function useAuth() {
     })
     .then(response => {
       if (!response.ok) {
-        return response.json().then(json => { throw json; });
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          return response.json().then(json => { throw json; });
+        } else {
+          throw Error("Server error.");
+        }
       }
       return response;
     })

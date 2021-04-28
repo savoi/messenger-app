@@ -19,16 +19,19 @@ jwt = JWTManager()
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=False)
-    else:
-        app.config.from_mapping(test_config)
-
     # ensure the instance folder exists
     try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+        if not os.path.exists(app.instance_path):
+            os.makedirs(app.instance_path)
+        if test_config is None:
+            app.config.from_pyfile('config.py', silent=False)
+        else:
+            app.config.from_mapping(test_config)
+    except FileNotFoundError:
+        app.logger.error(
+            "Ensure config.py is in the instance directory before running."
+        )
+        return None
 
     database.init_app(app)
     jwt.init_app(app)
