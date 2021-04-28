@@ -17,64 +17,12 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 23
   },
   label: { fontSize: 19, color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
-  heroText: {
-    fontSize: 26,
-    fontFamily: "'Open Sans'",
-    textAlign: "center",
-    color: "white",
-    marginTop: 30,
-    maxWidth: 300
-  },
-  overlay: {
-    backgroundImage:
-      "linear-gradient(180deg, rgb(58,141,255, 0.75) 0%, rgb(134,185,255, 0.75) 100%)",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    flexDirection: "column",
-    minHeight: "100vh",
-    paddingBottom: 145,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  link: { textDecoration: "none", display: "flex", flexWrap: "nowrap" },
-  noAccBtn: {
-    fontSize: 14,
-    color: "#b0b0b0",
-    fontWeight: 400,
-    textAlign: "center",
-    marginRight: 21,
-    whiteSpace: "nowrap"
-  },
-  accBtn: {
-    fontSize: 14,
-    fontWeight: 600,
-    width: 170,
-    height: 54,
-    borderRadius: 5,
-    filter: "drop-shadow(0px 2px 6px rgba(74,106,149,0.2))",
-    backgroundColor: "#ffffff",
-    color: "#3a8dff",
-    boxShadow: "none",
-    marginRight: 35
-  },
-  welcome: {
-    fontSize: 26,
-    paddingBottom: 20,
-    color: "#000000",
-    fontWeight: 600
-  },
   inputs: {
     marginTop: ".8rem",
     height: "2rem",
     padding: "5px",
     fontSize: 14,
     fontWeight: 600
-  },
-  forgot: {
-    paddingRight: 10,
-    color: "#3a8dff",
-    fontSize: 12
   },
   image: {
     backgroundImage: "url(./images/bg-img.png)",

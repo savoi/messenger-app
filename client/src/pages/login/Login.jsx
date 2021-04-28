@@ -16,10 +16,19 @@ import AuthSideBanner from "components/auth/AuthSideBanner";
 import AuthHeaderButtons from "components/auth/AuthHeaderButtons";
 import AuthWelcomeMessage from "components/auth/AuthWelcomeMessage";
 import useStyles from "styles/AuthStyles";
+import { makeStyles } from "@material-ui/core/styles";
 
+const useLoginStyles = makeStyles(theme => ({
+  forgot: {
+    paddingRight: 10,
+    color: "#3a8dff",
+    fontSize: 12
+  }
+}));
 
 export default function Login() {
   const classes = useStyles();
+  const loginClasses = useLoginStyles();
   const [open, setOpen] = React.useState(false);
   const { loginUser, error } = useAuth();
 
@@ -88,7 +97,7 @@ export default function Login() {
                     InputProps={{
                       classes: { input: classes.inputs },
                       endAdornment: (
-                        <Typography className={classes.forgot}>
+                        <Typography className={loginClasses.forgot}>
                           Forgot?
                         </Typography>
                       )

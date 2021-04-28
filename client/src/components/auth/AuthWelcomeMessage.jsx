@@ -1,6 +1,15 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import useStyles from "styles/AuthStyles";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(theme => ({
+  welcome: {
+    fontSize: 26,
+    paddingBottom: 20,
+    color: "#000000",
+    fontWeight: 600
+  }
+}));
 
 const AuthWelcomeMessage = ({page}) => {
   const classes = useStyles();
