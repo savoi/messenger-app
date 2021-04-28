@@ -8,8 +8,8 @@ const AuthHeaderButtons = ({page}) => {
   const classes = useStyles();
 
   const linkTo = {
-    "login": "signup",
-    "signup": "login"
+    "login": "/signup",
+    "signup": "/login"
   }
 
   const leftButtonMsg = {
@@ -23,7 +23,7 @@ const AuthHeaderButtons = ({page}) => {
 
   return (
     <Box p={1} alignSelf="flex-end" alignItems="center">
-      <Link to={`/${linkTo[page]}`} className={classes.link}>
+      <Link to={linkTo[page]} className={classes.link}>
         <Button className={classes.noAccBtn}>
           {leftButtonMsg[page]}
         </Button>
