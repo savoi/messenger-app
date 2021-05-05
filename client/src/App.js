@@ -5,16 +5,16 @@ import { BrowserRouter, Route } from "react-router-dom";
 import Login from "pages/login/Login";
 import Signup from "pages/signup/Signup";
 import Dashboard from "pages/dashboard/Dashboard";
-import { UserContext } from 'contexts/UserContext';
-import useCheckUser from 'hooks/useCheckUser';
+import { UserContext } from "contexts/UserContext";
+import useCheckUser from "hooks/useCheckUser";
 import ProtectedRoute from "components/auth/ProtectedRoute";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 function App() {
-  const { user, setUser, isLoading } = useCheckUser();
+  const { isLoading, user, setUser } = useCheckUser();
 
   return (
-    <UserContext.Provider value={{ user, setUser, isLoading }}>
+    <UserContext.Provider value={{ isLoading, user, setUser }}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline>
           <BrowserRouter>
@@ -24,7 +24,7 @@ function App() {
             <Route exact path="/" component={Login}>
             </Route>
           </BrowserRouter>
-      </CssBaseline>
+        </CssBaseline>
       </MuiThemeProvider>
     </UserContext.Provider>
   );

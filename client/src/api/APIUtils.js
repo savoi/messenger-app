@@ -25,3 +25,38 @@ export async function getWithJWT(apiEndpoint) {
 export async function postWithJWT(apiEndpoint, postData) {
   return await makeRequestWithJWT('post', apiEndpoint, postData);
 }
+
+function getAuthFetchOptions(data) {
+  return {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  };
+}
+
+async function handleBadAuthResponse(response) {
+  const contentType = response.headers.get("content-type");
+  if (!contentType) {
+    throw new Error("Server unreachable.");
+  }
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    throw await response.json();
+  } else {
+    throw new Error("Server error.");
+  }
+}
+
+export async function makeAuthCall(url, data) {
+  const response = await fetch(url, getAuthFetchOptions(data));
+  const responseJson = await response.json();
+  if (!response.ok) {
+    if (responseJson['message']) {
+      throw new Error(responseJson['message']);
+    }
+    return handleBadAuthResponse(response);
+  } else {
+    return responseJson;
+  }
+}

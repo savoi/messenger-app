@@ -7,22 +7,18 @@ export default function useCheckUser() {
 
     useEffect(() => {
       async function checkUser() {
-        await getWithJWT('/user')
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('Error fetching user.');
-          }
-        })
-        .then(user => {
-          setUser(user.current_user);
+        const response = await getWithJWT('/user');
+        if (response.ok) {
+          const jsonResponse =  await response.json();
+          setUser(jsonResponse['current_user']);
           setLoading(false);
-        }).catch(err => {
-            setLoading(false);
-        });
+        } else {
+          throw new Error('Error fetching user.');
+        }
       }
-      checkUser();
+      checkUser().catch(err => {
+        setLoading(false);
+      });
     }, []);
 
     return {

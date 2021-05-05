@@ -1,106 +1,69 @@
-import { useState, useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { UserContext } from 'contexts/UserContext';
-import { getWithJWT } from "api/APIUtils";
+import { getWithJWT, makeAuthCall } from "api/APIUtils";
+import { UserContext } from "contexts/UserContext";
 
 export default function useAuth() {
   let history = useHistory();
-  const { setUser } = useContext(UserContext);
   const [error, setError] = useState(null);
+  const { setUser } = useContext(UserContext);
 
-  // Set user in context and push them to dashboard
+  // Set user context based on current JWT tokens
   const setUserContext = async () => {
-    return await getWithJWT('/user')
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Error fetching user.');
-        }
-      })
-      .then(user => {
-        setUser(user['current_user']);
-        history.push('/dashboard');
-      })
-      .catch((err) => {
-        setError(err.message);
+    async function getUser() {
+      const response = await getWithJWT('/user');
+      const responseJson = await response.json();
+      if (response.ok) {
+        setUser(responseJson['current_user']);
+      } else {
+        throw new Error('Error fetching user.');
+      }
+    }
+    getUser().catch(err => {
+      setUser(null);
+      setError(err.message);
+    });
+  };
+
+  const registerUser = async (data) => {
+    return await makeAuthCall('/register', data)
+    .then(response => {
+      setUserContext();
+      setError(response.message);
     })
+    .catch(err => {
+      setError(err.message);
+    });
   }
 
-  // Register user
-  const registerUser = async (data) => {
-     const { username, email, password } = data;
-     return await fetch('/register', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json',
-       },
-       body: JSON.stringify({username, email, password})
-     })
-     .then(response => {
-       if (!response.ok) {
-         const contentType = response.headers.get("content-type");
-         if (contentType && contentType.indexOf("application/json") !== -1) {
-           return response.json().then(json => { throw json; });
-         } else {
-           throw Error("Server error.");
-         }
-       }
-       return response;
-     })
-     .then(async () => {
-       await setUserContext();
-     })
-     .catch((err) => {
-         setError(err.message);
-    })
-  };
-
-  // login user
   const loginUser = async (data) => {
-    return await fetch('/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
+    return await makeAuthCall('/login', data)
+    .then(() => {
+      setUserContext();
+      history.push('/dashboard');
     })
-    .then(response => {
-      if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          return response.json().then(json => { throw json; });
-        } else {
-          throw Error("Server error.");
-        }
-      }
-      return response;
-    })
-    .then(async () => {
-      await setUserContext();
-    })
-    .catch((err) => {
+    .catch(err => {
       setError(err.message);
-    })
-  };
+    });
+  }
 
   const logoutUser = async () => {
-    return await fetch('/logout', {
-      method: 'POST'
-    })
-    .then(async () => {
+    async function logout() {
+      await fetch('/logout', {
+        method: 'POST'
+      })
       setUser(null);
-    })
-    .catch((err) => {
+      history.push('/login');
+    }
+    return await logout().catch(err => {
       setError(err.response.data);
     })
-  }
+  };
 
   return {
    registerUser,
    loginUser,
    logoutUser,
-   error,
-   setUserContext
+   error
   }
 }
