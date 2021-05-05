@@ -60,3 +60,13 @@ export async function makeAuthCall(url, data) {
     return responseJson;
   }
 }
+
+export async function getUser() {
+  const response = await getWithJWT('/user');
+  if (response.ok) {
+    const jsonResponse =  await response.json();
+    return jsonResponse['current_user'];
+  } else {
+    throw new Error('Error fetching user.');
+  }
+}

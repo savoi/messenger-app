@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getWithJWT, makeAuthCall } from "api/APIUtils";
+import { getUser, makeAuthCall } from "api/APIUtils";
 import { UserContext } from "contexts/UserContext";
 
 export default function useAuth() {
@@ -10,54 +10,43 @@ export default function useAuth() {
 
   // Set user context based on current JWT tokens
   const setUserContext = async () => {
-    async function getUser() {
-      const response = await getWithJWT('/user');
-      const responseJson = await response.json();
-      if (response.ok) {
-        setUser(responseJson['current_user']);
-      } else {
-        throw new Error('Error fetching user.');
-      }
-    }
-    getUser().catch(err => {
+    try {
+      const response = await getUser();
+      setUser(response);
+    } catch(err) {
       setUser(null);
       setError(err.message);
-    });
+    }
   };
 
   const registerUser = async (data) => {
-    return await makeAuthCall('/register', data)
-    .then(response => {
+    try {
+      const response = await makeAuthCall('/register', data);
       setUserContext();
       setError(response.message);
-    })
-    .catch(err => {
+    } catch(err) {
       setError(err.message);
-    });
+    }
   }
 
   const loginUser = async (data) => {
-    return await makeAuthCall('/login', data)
-    .then(() => {
+    try {
+      await makeAuthCall('/login', data);
       setUserContext();
       history.push('/dashboard');
-    })
-    .catch(err => {
+    } catch(err) {
       setError(err.message);
-    });
+    }
   }
 
   const logoutUser = async () => {
-    async function logout() {
-      await fetch('/logout', {
-        method: 'POST'
-      })
+    try {
+      await fetch('/logout', { method: 'POST' });
       setUser(null);
       history.push('/login');
-    }
-    return await logout().catch(err => {
+    } catch(err) {
       setError(err.response.data);
-    })
+    }
   };
 
   return {
