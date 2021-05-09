@@ -21,9 +21,9 @@ export default function useAuth() {
 
   const registerUser = async (data) => {
     try {
-      const response = await makeAuthCall('/register', data);
+      await makeAuthCall('/register', data);
       setUserContext();
-      setError(response.message);
+      history.push('/dashboard');
     } catch(err) {
       setError(err.message);
     }
