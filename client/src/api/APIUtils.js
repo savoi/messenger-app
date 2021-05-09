@@ -10,11 +10,13 @@ async function makeRequestWithJWT(method, apiEndpoint, postData) {
     credentials: 'same-origin',
     headers: {
       'X-CSRF-TOKEN': getCookie('csrf_access_token'),
+      'Content-Type': 'application/json'
     }
   };
   if (postData) {
     options['body'] = JSON.stringify(postData);
   }
+  console.log(options);
   return await fetch(apiEndpoint, options);
 }
 
@@ -78,5 +80,19 @@ export async function getJson(url) {
     return jsonResponse;
   } else {
     throw new Error('Error fetching data.');
+  }
+}
+
+export async function postMessage(body, toUsername) {
+  const data = {
+    body: body,
+    to_username: toUsername
+  };
+  const response = await postWithJWT('/messages', data);
+  const responseJson = await response.json();
+  if (response.ok) {
+    return response;
+  } else {
+    throw new Error("Error sending message.");
   }
 }

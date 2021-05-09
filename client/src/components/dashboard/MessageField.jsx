@@ -4,7 +4,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import SentimentSatisfiedOutlinedIcon from '@material-ui/icons/SentimentSatisfiedOutlined';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { getJson } from "api/APIUtils";
+import { getJson, postMessage } from "api/APIUtils";
 
 
 const useDashboardStyles = makeStyles(theme => ({
@@ -15,8 +15,10 @@ const useDashboardStyles = makeStyles(theme => ({
     marginTop: 15
   },
   input: {
-    color: '#99A9C4',
-    fontWeight: 600
+    color: '#9CADC8',
+    fontWeight: 600,
+    borderRadius: 8,
+    height: 70
   },
   adornment: {
     color: '#B1C3DF'
@@ -44,36 +46,35 @@ const CustomTextField = withStyles({
 })(TextField);
 
 
-export default function MessageField() {
+export default function MessageField({ activeUser }) {
   const classes = useDashboardStyles();
-  const [query, setQuery] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (query) {
-      getJson(`/users?search=${query}`)
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (message) {
+      postMessage(message, activeUser)
       .then(response => {
         console.log(response);
+        setMessage("");
       }).catch(err => {
         setError(err.message);
         console.log(err.message);
       });
     }
-  }, [query]);
-
-  const handleChange = (event) => {
-    setQuery(event.target.value);
   }
 
   return (
     <Container>
-      <form noValidate autoComplete="off" className={classes.textField}>
+      <form noValidate autoComplete="off" className={classes.textField} onSubmit={handleSubmit}>
         <CustomTextField
           id="outlined-basic"
           placeholder="Type something..."
           variant="outlined"
           fullWidth
-          onChange={handleChange}
+          value={message}
+          onInput={ e => setMessage(e.target.value) }
           InputProps={{
             className: classes.input,
             endAdornment: (

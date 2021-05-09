@@ -17,6 +17,7 @@ import SearchBar from "components/dashboard/SearchBar";
 import ChatHeader from "components/dashboard/ChatHeader";
 import Message from "components/dashboard/Message";
 import MessageField from "components/dashboard/MessageField";
+import ChatPlaceholder from "components/dashboard/ChatPlaceholder";
 import { getJson } from "api/APIUtils";
 
 const ITEM_HEIGHT = 48;
@@ -154,18 +155,25 @@ export default function Dashboard() {
         </Container>
       </Paper>
     </Grid>
-      <Grid container id="chat-panel" lg={8}>
-        <Box flexGrow="1">
-          <ChatHeader toUsername={activeConversationUsers} isOnline={true} />
-          <StyledChatContainer>
-          <Box lg={12}>
-            {activeConversationMessages.map(message => (
-              <Message fromUser={message['from_user']} body={message.body} timestamp={message['created_at']['$date']} />
-            ))}
-          </Box>
-        </StyledChatContainer>
-          <MessageField />
-        </Box>
+      <Grid container id="chat-panel" lg={8} justify="center">
+        {
+          activeConversationId
+          ? (
+              <Box flexGrow="1">
+                <ChatHeader toUsername={activeConversationUsers} isOnline={true} />
+                <StyledChatContainer>
+                <Box lg={12}>
+                  {activeConversationMessages.map(message => (
+                    <Message fromUser={message['from_user']} body={message.body} timestamp={message['created_at']['$date']} />
+                  ))}
+                </Box>
+              </StyledChatContainer>
+                <MessageField activeUser={activeConversationUsers[0]} />
+              </Box>
+            )
+          :
+            <ChatPlaceholder />
+        }
       </Grid>
     </Box>
   );
