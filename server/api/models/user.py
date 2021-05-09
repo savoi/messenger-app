@@ -39,18 +39,21 @@ class User(db.Document):
                 password=hashedpw
             )
             new_user.save()
-            return {'success': True}
+            return {'status': "success", 'message': "User successfully added."}
         except NotUniqueError as nue:
             unique_violation = ""
             for field in User._fields:
                 if field in str(nue):
                     unique_violation = 'That {} already exists.'.format(field)
                     break
-            return {'error': {'status': "error", 'message': unique_violation}}
+            return {'status': "error", 'message': unique_violation}
         except ValidationError as ve:
-            return {'error': {'validation_error': str(ve)}}
+            return {
+                'status': "error",
+                'message': str(ve)
+            }
         except Exception as e:
-            return {"error": {'error': str(e)}}
+            return {'status': "error", 'message': str(e)}
 
     @staticmethod
     def get(email):

@@ -16,7 +16,13 @@
 
 1. Copy the file .env.sample to .env
 
-2. Copy config.py.sample to config.py and in the new file, enter a secret key in
+3. Create an instance folder in the server root directory if it doesn't exist:
+
+  ```
+  $ mkdir instance
+  ```
+
+2. Copy config.py.sample to `instance/config.py` and enter a secret key in
    the `JWT_SECRET_KEY` entry. Generate a new key with the command:
 
    ```
