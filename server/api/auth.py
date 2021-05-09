@@ -70,7 +70,7 @@ def register():
         try:
             user = User.get(email)
             response = jsonify(SUCCESS_REGISTER)
-            access_token = create_access_token(identity=user.email)
+            access_token = create_access_token(identity=user.username)
             set_access_cookies(response, access_token)
             return response, 201
         except Exception as e:
@@ -102,7 +102,7 @@ def login():
 
     try:
         response = jsonify(SUCCESS_LOGIN)
-        access_token = create_access_token(identity=user.email)
+        access_token = create_access_token(identity=user.username)
         set_access_cookies(response, access_token)
         return response, 201
     except Exception as e:

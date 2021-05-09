@@ -70,3 +70,13 @@ export async function getUser() {
     throw new Error('Error fetching user.');
   }
 }
+
+export async function getJson(url) {
+  const response = await getWithJWT(url);
+  if (response.ok) {
+    const jsonResponse =  await response.json();
+    return jsonResponse;
+  } else {
+    throw new Error('Error fetching data.');
+  }
+}

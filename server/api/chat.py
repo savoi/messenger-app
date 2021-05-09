@@ -43,9 +43,9 @@ def messages():
     if not to_user:
         return jsonify(ERROR_RECIPIENT_DOES_NOT_EXIST), 400
 
-    conversation_id = Conversation.get_id([current_user.id, to_user.id])
+    conversation_id = Conversation.get_id([current_user.username, to_user.username])
     db_response = Message.add(
-        current_user.id, to_user.id, conversation_id, message_body
+        current_user.username, to_user.username, conversation_id, message_body
     )
     if db_response['status'] == "success":
         return jsonify(db_response), 201
@@ -59,11 +59,11 @@ def messages():
 def conversations(conversation_id=None):
     try:
         if not conversation_id:
-            conversation_previews = Conversation.get_previews(current_user.id)
+            conversation_previews = Conversation.get_previews(current_user.username)
             return jsonify(conversation_previews), 200
         else:
             conversation = Conversation.get(conversation_id)
-            if current_user.id in conversation.users:
+            if current_user.username in conversation.users:
                 return jsonify(conversation), 200
             else:
                 return jsonify(ERROR_UNAUTHORIZED_ACCESS), 401
