@@ -16,7 +16,6 @@ async function makeRequestWithJWT(method, apiEndpoint, postData) {
   if (postData) {
     options['body'] = JSON.stringify(postData);
   }
-  console.log(options);
   return await fetch(apiEndpoint, options);
 }
 
@@ -89,7 +88,6 @@ export async function postMessage(body, toUsername) {
     to_username: toUsername
   };
   const response = await postWithJWT('/messages', data);
-  const responseJson = await response.json();
   if (response.ok) {
     return response;
   } else {

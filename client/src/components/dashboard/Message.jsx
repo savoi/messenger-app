@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import Avatar from '@material-ui/core/Avatar';
-import Box from "@material-ui/core/Box";
+import Grid from '@material-ui/core/Grid';
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -25,8 +25,8 @@ const Message = ({fromUser, body, timestamp}) => {
       color: "#BECCE2",
       fontSize: "0.7rem"
     },
-    chatWindow: {
-      maxHeight: "70vh"
+    message: {
+      width: "auto"
     }
   }));
   const classes = useStyles();
@@ -47,19 +47,19 @@ const Message = ({fromUser, body, timestamp}) => {
   })(Paper);
 
   return (
-    <Box display="flex" alignItems="flex-start" justifyContent={alignment} className={classes.chatWindow}>
+    <Grid container alignItems="center" justify={alignment} spacing={2}>
       {!fromSelf &&
-      <Box mt={2}>
+      <Grid item mt={2}>
         <Avatar alt={fromUser} src="/" />
-      </Box>
+      </Grid>
       }
-      <Box p={1} display="flex" flexDirection="column" alignItems={alignment}>
+      <Grid container item p={1} direction="column" alignItems={alignment} className={classes.message}>
         <Typography variant="subtitle2" className={classes.meta}>{messageMeta}</Typography>
         <StyledPaper elevation={0} p={3}>
           <Typography variant="subtitle2" className={classes.body}>{body}</Typography>
         </StyledPaper>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 }
 

@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { getJson } from "api/APIUtils";
+import useDebounce from "hooks/useDebounce";
 
 
-const useDashboardStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   userSearch: {
     backgroundColor: "#E9EEF9",
     borderColor: "#E9EEF9",
-    borderRadius: 4,
-    marginTop: 15
+    borderRadius: 4
   },
   input: {
     color: '#99A9C4',
@@ -43,22 +45,40 @@ const CustomTextField = withStyles({
 })(TextField);
 
 
-export default function SearchBar() {
-  const classes = useDashboardStyles();
+export default function SearchBar({ setError }) {
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const loading = open && options.length === 0;
   const [query, setQuery] = useState("");
-  const [error, setError] = useState(null);
+  const debouncedQuery = useDebounce(query, 500);
 
   useEffect(() => {
-    if (query) {
-      getJson(`/users?search=${query}`)
+    let active = true;
+
+    if (!loading) {
+      return "";
+    }
+
+    if (debouncedQuery && active) {
+      getJson(`/users?search=${debouncedQuery}`)
       .then(response => {
-        console.log(response);
+        setOptions(response.map((user) => user.username));
       }).catch(err => {
         setError(err.message);
-        console.log(err.message);
       });
     }
-  }, [query]);
+
+    return () => {
+      active = false;
+    };
+  }, [loading, debouncedQuery, setError]);
+
+  useEffect(() => {
+    if (!open) {
+      setOptions([]);
+    }
+  }, [open]);
 
   const handleChange = (event) => {
     setQuery(event.target.value);
@@ -66,21 +86,43 @@ export default function SearchBar() {
 
   return (
     <form noValidate autoComplete="off" className={classes.userSearch}>
-      <CustomTextField
-        id="outlined-basic"
-        placeholder="Search"
-        variant="outlined"
-        fullWidth
-        onChange={handleChange}
-        InputProps={{
-          className: classes.input,
-          startAdornment: (
-            <InputAdornment position="start" className={classes.adornment}>
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
+    <Autocomplete
+      id="autocomplete-bar"
+      open={open}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+      }}
+      getOptionSelected={(option, value) => option === value}
+      options={options}
+      filterOptions={(x) => x}
+      loading={loading}
+      renderInput={(params) => (
+        <CustomTextField
+          {...params}
+          variant="outlined"
+          placeholder="Search"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{
+            className: classes.input,
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start" className={classes.adornment}>
+                <SearchIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <React.Fragment>
+                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+              </React.Fragment>
+            ),
+          }}
+        />
+      )}
+    />
     </form>
   );
 }

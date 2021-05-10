@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Container from '@material-ui/core/Container';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import SentimentSatisfiedOutlinedIcon from '@material-ui/icons/SentimentSatisfiedOutlined';
+import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { getJson, postMessage } from "api/APIUtils";
+import { postMessage } from "api/APIUtils";
 
 
 const useDashboardStyles = makeStyles(theme => ({
   textField: {
     backgroundColor: "#F4F6FA",
     borderColor: "#F4F6FA",
-    borderRadius: 8,
-    marginTop: 15
+    borderRadius: 8
   },
   input: {
     color: '#9CADC8',
@@ -20,8 +19,12 @@ const useDashboardStyles = makeStyles(theme => ({
     borderRadius: 8,
     height: 70
   },
-  adornment: {
-    color: '#B1C3DF'
+  adornments: {
+    color: '#D1D9E6',
+    gap: "10px"
+  },
+  icons: {
+    paddingRight: 10
   }
 }));
 
@@ -30,7 +33,7 @@ const CustomTextField = withStyles({
     fontWeight: 600,
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
-        borderColor: '#E9EEF9',
+        borderColor: '#F4F6FA',
       },
       '&:hover fieldset': {
         borderColor: '#99A9C4',
@@ -46,7 +49,7 @@ const CustomTextField = withStyles({
 })(TextField);
 
 
-export default function MessageField({ activeUser }) {
+export default function MessageField({ activeUser, setNewMessage }) {
   const classes = useDashboardStyles();
   const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
@@ -56,35 +59,33 @@ export default function MessageField({ activeUser }) {
     if (message) {
       postMessage(message, activeUser)
       .then(response => {
-        console.log(response);
         setMessage("");
+        setNewMessage(true);
       }).catch(err => {
         setError(err.message);
-        console.log(err.message);
       });
     }
   }
 
   return (
-    <Container>
-      <form noValidate autoComplete="off" className={classes.textField} onSubmit={handleSubmit}>
-        <CustomTextField
-          id="outlined-basic"
-          placeholder="Type something..."
-          variant="outlined"
-          fullWidth
-          value={message}
-          onInput={ e => setMessage(e.target.value) }
-          InputProps={{
-            className: classes.input,
-            endAdornment: (
-              <InputAdornment position="start" className={classes.adornment}>
-                <SentimentSatisfiedOutlinedIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </form>
-    </Container>
+    <form noValidate autoComplete="off" className={classes.textField} onSubmit={handleSubmit}>
+      <CustomTextField
+        id="outlined-basic"
+        placeholder="Type something..."
+        variant="outlined"
+        fullWidth
+        value={message}
+        onInput={ e => setMessage(e.target.value) }
+        InputProps={{
+          className: classes.input,
+          endAdornment: (
+            <InputAdornment position="start" className={classes.adornments}>
+              <SentimentSatisfiedOutlinedIcon mr={1} />
+              <FileCopyOutlinedIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+    </form>
   );
 }

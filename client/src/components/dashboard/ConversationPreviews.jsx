@@ -6,17 +6,18 @@ import { getJson } from "api/APIUtils";
 import ConversationPreview from "components/dashboard/ConversationPreview";
 
 const useStyles = makeStyles(theme => ({
-  previews: {
-    marginTop: 20
-  },
   list: {
-    maxHeight: "60vh"
+    maxHeight: "60vh",
+    scrollbarWidth: "none",
+    '&::-webkit-scrollbar': {
+      width: 0,
+      height: 0
+    },
   }
 }));
 
-const ConversationPreviews = (props) => {
+const ConversationPreviews = ({ conversationClick, setError }) => {
   const [previews, setPreviews] = useState([]);
-  const [error, setError] = useState(null);
   const classes = useStyles();
 
   useEffect(() => {
@@ -26,10 +27,10 @@ const ConversationPreviews = (props) => {
     }).catch(err => {
       setError(err.message);
     });
-  }, []);
+  }, [setError]);
 
   return (
-    <Box p={1} alignSelf="flex-end" alignItems="center" className={classes.previews}>
+    <Box p={1/2} alignSelf="flex-end" alignItems="center">
       <GridList container alignItems="center" className={classes.list}>
         {previews.map(preview => (
           <ConversationPreview
@@ -39,7 +40,7 @@ const ConversationPreviews = (props) => {
             isOnline={true}
             lastMessage={preview.messages[0].body}
             conversationId={preview.messages[0].conversation_id['$oid']}
-            customClickEvent={props.conversationClick}
+            customClickEvent={conversationClick}
           />
         ))}
       </GridList>
