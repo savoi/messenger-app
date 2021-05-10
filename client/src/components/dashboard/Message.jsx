@@ -8,8 +8,9 @@ import { UserContext } from 'contexts/UserContext';
 
 
 const Message = ({fromUser, body, timestamp}) => {
-  const date = new Date(timestamp);
-  const time = `${date.getHours()}:${date.getMinutes()}`;
+  const msgDate = new Date(timestamp);
+  const minutes = `${msgDate.getMinutes()}`.padStart(2, "0");
+  const time = `${msgDate.getHours()}:${minutes}`;
   const { user } = useContext(UserContext);
 
   const fromSelf = (fromUser === user);
