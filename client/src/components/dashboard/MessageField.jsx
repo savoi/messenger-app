@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import SentimentSatisfiedOutlinedIcon from '@material-ui/icons/SentimentSatisfiedOutlined';
@@ -49,10 +49,9 @@ const CustomTextField = withStyles({
 })(TextField);
 
 
-export default function MessageField({ activeUser, setNewMessage }) {
+export default function MessageField({ activeUser, setNewMessage, setError }) {
   const classes = useDashboardStyles();
   const [message, setMessage] = useState("");
-  const [error, setError] = useState(null);
 
   const handleSubmit = (event) => {
     event.preventDefault();

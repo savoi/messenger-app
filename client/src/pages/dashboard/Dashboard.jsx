@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Box from "@material-ui/core/Box";
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -141,7 +141,7 @@ export default function Dashboard() {
     setActiveConversationId(conversationId);
   }
 
-  const handleSelectUser = (username) => {
+  const handleSelectUser = useCallback((username) => {
     if (username) {
       const preview = previews.find((preview) => {
         return preview.users.includes(username);
@@ -159,7 +159,7 @@ export default function Dashboard() {
         });
       }
     }
-  }
+  }, [previews, user]);
 
   return (
     <Box display="flex">
@@ -243,7 +243,7 @@ export default function Dashboard() {
               <Grid item>
                 <Box mb={3}>
                   <NarrowContainer>
-                    <MessageField activeUser={activeConversationUsers[0]} setNewMessage={setNewMessage} />
+                    <MessageField activeUser={activeConversationUsers[0]} setNewMessage={setNewMessage} setError={setError} />
                   </NarrowContainer>
                 </Box>
               </Grid>
