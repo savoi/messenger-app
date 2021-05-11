@@ -94,3 +94,16 @@ export async function postMessage(body, toUsername) {
     throw new Error("Error sending message.");
   }
 }
+
+export async function newConversation(usernames) {
+  const data = {
+    usernames: usernames
+  };
+  const response = await postWithJWT('/conversations', data);
+  const responseJson = await response.json();
+  if (response.ok) {
+    return responseJson;
+  } else {
+    throw new Error("Error starting new conversation.", responseJson);
+  }
+}

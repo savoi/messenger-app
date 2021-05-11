@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import GridList from '@material-ui/core/GridList';
 import { makeStyles } from "@material-ui/core/styles";
 import { getJson } from "api/APIUtils";
 import ConversationPreview from "components/dashboard/ConversationPreview";
+import { UserContext } from 'contexts/UserContext';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -16,9 +17,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ConversationPreviews = ({ conversationClick, setError }) => {
-  const [previews, setPreviews] = useState([]);
+const ConversationPreviews = ({ conversationClick, setError, previews, setPreviews, isNewConvo }) => {
   const classes = useStyles();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     getJson('/conversations')
@@ -27,19 +28,19 @@ const ConversationPreviews = ({ conversationClick, setError }) => {
     }).catch(err => {
       setError(err.message);
     });
-  }, [setError]);
+  }, [setError, setPreviews, isNewConvo]);
 
   return (
     <Box p={1/2} alignSelf="flex-end" alignItems="center">
-      <GridList container alignItems="center" className={classes.list}>
+      <GridList className={classes.list}>
         {previews.map(preview => (
           <ConversationPreview
-            key={preview.messages[0].conversation_id['$oid']}
-            username={preview.users[1]}
+            key={preview['_id']['$oid']}
+            username={preview.users.filter(username => username !== user)[0]}
             profilePath="/"
             isOnline={true}
-            lastMessage={preview.messages[0].body}
-            conversationId={preview.messages[0].conversation_id['$oid']}
+            lastMessage={preview.messages[0]?.body ?? ""}
+            conversationId={preview['_id']['$oid']}
             customClickEvent={conversationClick}
           />
         ))}

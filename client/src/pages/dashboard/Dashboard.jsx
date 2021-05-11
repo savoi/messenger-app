@@ -18,7 +18,8 @@ import ChatHeader from "components/dashboard/ChatHeader";
 import Message from "components/dashboard/Message";
 import MessageField from "components/dashboard/MessageField";
 import ChatPlaceholder from "components/dashboard/ChatPlaceholder";
-import { getJson } from "api/APIUtils";
+import DashboardSnackbar from "components/dashboard/DashboardSnackbar";
+import { getJson, newConversation } from "api/APIUtils";
 
 const ITEM_HEIGHT = 48;
 
@@ -27,10 +28,11 @@ export default function Dashboard() {
   const { logoutUser } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeConversationId, setActiveConversationId] = useState(null);
-  const [activeConversation, setActiveConversation] = useState(null);
   const [activeConversationUsers, setActiveConversationUsers] = useState([]);
   const [activeConversationMessages, setActiveConversationMessages] = useState([]);
   const [newMessage, setNewMessage] = useState(null);
+  const [previews, setPreviews] = useState([]);
+  const [isNewConvo, setIsNewConvo] = useState(false);
   const [error, setError] = useState(null);
   const open = Boolean(anchorEl);
   const messagesEndRef = useRef(null);
@@ -41,7 +43,8 @@ export default function Dashboard() {
 
   const useDashboardStyles = makeStyles(theme => ({
     userpanel: {
-      backgroundColor: "#F5F7FB"
+      backgroundColor: "#F5F7FB",
+      width: "100%"
     },
     usermenu: {
       color: "#95A7C4"
@@ -64,7 +67,8 @@ export default function Dashboard() {
       marginTop: 15
     },
     sidePanel: {
-      maxHeight: "100vh"
+      maxHeight: "100vh",
+      height: "100vh"
     },
     chatPanel: {
       backgroundColor: activeConversationId ? "#FFF" : "#F4F6FA",
@@ -109,7 +113,7 @@ export default function Dashboard() {
   }, [activeConversationMessages]);
 
   useEffect(() => {
-    if (!activeConversationId) {
+    if (!activeConversationId || activeConversationId === -1) {
       return
     }
     getJson(`/conversations/${activeConversationId}`)
@@ -137,9 +141,29 @@ export default function Dashboard() {
     setActiveConversationId(conversationId);
   }
 
+  const handleSelectUser = (username) => {
+    if (username) {
+      const preview = previews.find((preview) => {
+        return preview.users.includes(username);
+      });
+      if (preview) {
+        setActiveConversationId(preview.['_id']['$oid']);
+      } else {
+        newConversation([user, username])
+        .then((response) => {
+          setIsNewConvo(prev => (!prev));
+          setActiveConversationId(response['conversationId']);
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+      }
+    }
+  }
+
   return (
     <Box display="flex">
-      <Grid container id="user-panel" wrap="nowrap" xl={4} lg={4} md={4} className={classes.sidePanel}>
+      <Grid container item id="user-panel" wrap="nowrap" xl={4} lg={4} md={4} className={classes.sidePanel}>
         <Paper elevation={0} square className={classes.userpanel}>
           <Container fixed>
             <Grid container spacing={3} wrap="nowrap" direction="column" className={classes.sidePanel}>
@@ -188,10 +212,10 @@ export default function Dashboard() {
                 <Typography variant="h6" className={classes.sidebarTitle}>Chats</Typography>
               </Grid>
               <Grid item>
-                <SearchBar setError={setError} />
+                <SearchBar setError={setError} handleSelectUser={handleSelectUser} />
               </Grid>
               <Grid item className={classes.chatPreviews}>
-                <ConversationPreviews conversationClick={handleConversationClick} setError={setError} />
+                <ConversationPreviews conversationClick={handleConversationClick} setError={setError} previews={previews} setPreviews={setPreviews} isNewConvo={isNewConvo} />
               </Grid>
             </Grid>
           </Container>
@@ -200,17 +224,17 @@ export default function Dashboard() {
       {
         activeConversationId
         ? (
-            <Grid container id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={classes.chatPanel}>
+            <Grid container item id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={classes.chatPanel}>
               <Grid item>
                 <ChatHeader toUsername={activeConversationUsers} isOnline={true} />
               </Grid>
               <Grid item className={classes.messageContainer}>
                 <NarrowContainer>
-                  <Grid container direction="column" justify="space-between" lg={12} className={classes.messages}>
+                  <Grid container item direction="column" justify="space-between" lg={12} className={classes.messages}>
                     {activeConversationMessages.map(message => (
                       <React.Fragment>
-                        <Message fromUser={message['from_user']} body={message.body} timestamp={message['created_at']['$date']} />
-                        <div ref={messagesEndRef} />
+                        <Message key={message['created_at']['$date']} fromUser={message['from_user']} body={message.body} timestamp={message['created_at']['$date']} />
+                        <div key={-1} ref={messagesEndRef} />
                       </React.Fragment>
                     ))}
                   </Grid>
@@ -226,10 +250,11 @@ export default function Dashboard() {
             </Grid>
           )
         :
-          <Grid container id="chat-panel" lg={8} direction="column" justify="center" className={classes.chatPanel}>
+          <Grid container item id="chat-panel" lg={8} direction="column" justify="center" className={classes.chatPanel}>
             <ChatPlaceholder />
           </Grid>
       }
+      <DashboardSnackbar error={error} />
     </Box>
   );
 }

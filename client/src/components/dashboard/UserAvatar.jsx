@@ -4,7 +4,7 @@ import Badge from '@material-ui/core/Badge';
 import { withStyles } from '@material-ui/core/styles';
 
 
-const UserAvatar = ({username, profilePath, isOnline}) => {
+const UserAvatar = ({username, profilePath = "/", isOnline}) => {
   const statusColor = isOnline ? '#1CED84' : '#D0DAE9';
   const StyledBadge = withStyles((theme) => ({
     badge: {

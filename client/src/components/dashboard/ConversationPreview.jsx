@@ -27,7 +27,6 @@ const ConversationPreview = ({username, profilePath, isOnline, lastMessage, conv
 
   const handleClick = () => {
     customClickEvent(conversationId);
-    //classes.previewCard.background = "rgba(255, 255, 255, 1)";
   };
 
   return (

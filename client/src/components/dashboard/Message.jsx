@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import Avatar from '@material-ui/core/Avatar';
+import Box from "@material-ui/core/Box";
 import Grid from '@material-ui/core/Grid';
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
@@ -27,6 +28,9 @@ const Message = ({fromUser, body, timestamp}) => {
     },
     message: {
       width: "auto"
+    },
+    messageContainer: {
+      marginBottom: 3
     }
   }));
   const classes = useStyles();
@@ -47,11 +51,13 @@ const Message = ({fromUser, body, timestamp}) => {
   })(Paper);
 
   return (
-    <Grid container alignItems="center" justify={alignment} spacing={2}>
+    <Grid container alignItems="flex-start" wrap="nowrap" justify={alignment} spacing={2} className={classes.messageContainer}>
       {!fromSelf &&
-      <Grid item mt={2}>
-        <Avatar alt={fromUser} src="/" />
-      </Grid>
+        <Grid item>
+          <Box mt={1}>
+            <Avatar alt={fromUser} src="/" />
+          </Box>
+        </Grid>
       }
       <Grid container item p={1} direction="column" alignItems={alignment} className={classes.message}>
         <Typography variant="subtitle2" className={classes.meta}>{messageMeta}</Typography>
