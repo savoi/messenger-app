@@ -68,7 +68,8 @@ export default function SearchBar({ setError, handleSelectUser }) {
   useEffect(() => {
     let active = true;
 
-    if (!loading) {
+    if (!debouncedQuery) {
+      setOptions([]);
       return "";
     }
 
@@ -97,57 +98,58 @@ export default function SearchBar({ setError, handleSelectUser }) {
   }
 
   return (
-    <form noValidate autoComplete="off" className={classes.userSearch}>
-      <Autocomplete
-        id="autocomplete-bar"
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
-        open={open}
-        onOpen={() => {
-          setOpen(true);
-        }}
-        onClose={() => {
-          setOpen(false);
-        }}
-        getOptionSelected={(option, value) => option === value}
-        renderOption={(option) => (
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item>
-              <UserAvatar username={option} isOnline={true} />
-            </Grid>
-            <Grid item>
-              <Typography variant="subtitle2">{option}</Typography>
-            </Grid>
+    <Autocomplete
+      id="autocomplete-bar"
+      className={classes.userSearch}
+      onChange={(event, newValue) => {
+        setValue(newValue);
+      }}
+      open={open}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+        setQuery("");
+        setOptions([]);
+      }}
+      getOptionSelected={(option, value) => option === value}
+      renderOption={(option) => (
+        <Grid container alignItems="center" spacing={2}>
+          <Grid item>
+            <UserAvatar username={option} isOnline={true} />
           </Grid>
-        )}
-        options={options}
-        filterOptions={(x) => x}
-        loading={loading}
-        renderInput={(params) => (
-          <CustomTextField
-            {...params}
-            variant="outlined"
-            placeholder="Search"
-            fullWidth
-            onChange={handleChange}
-            InputProps={{
-              className: classes.input,
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment position="start" className={classes.adornment}>
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? <CircularProgress className={classes.adornment} size={20} /> : null}
-                </React.Fragment>
-              ),
-            }}
-          />
-        )}
-      />
-    </form>
+          <Grid item>
+            <Typography variant="subtitle2">{option}</Typography>
+          </Grid>
+        </Grid>
+      )}
+      options={options}
+      filterOptions={(x) => x}
+      loading={loading}
+      renderInput={(params) => (
+        <CustomTextField
+          {...params}
+          variant="outlined"
+          placeholder="Search"
+          fullWidth
+          onChange={handleChange}
+          InputProps={{
+            className: classes.input,
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start" className={classes.adornment}>
+                <SearchIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <React.Fragment>
+                {loading ? <CircularProgress className={classes.adornment} size={20} /> : null}
+              </React.Fragment>
+            ),
+          }}
+        />
+      )}
+    />
   );
 }
