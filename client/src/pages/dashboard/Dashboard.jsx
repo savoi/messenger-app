@@ -226,7 +226,14 @@ export default function Dashboard() {
                 <SearchBar setError={setError} handleSelectUser={handleSelectUser} />
               </Grid>
               <Grid item className={classes.chatPreviews}>
-                <ConversationPreviews conversationClick={handleConversationClick} setError={setError} previews={previews} setPreviews={setPreviews} isNewConvo={isNewConvo} />
+                <ConversationPreviews
+                  conversationClick={handleConversationClick}
+                  setError={setError}
+                  previews={previews}
+                  setPreviews={setPreviews}
+                  isNewConvo={isNewConvo}
+                  activeConversationId={activeConversationId}
+                />
               </Grid>
             </Grid>
           </Container>

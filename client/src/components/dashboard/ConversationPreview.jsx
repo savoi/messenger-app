@@ -1,28 +1,31 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
 import UserAvatar from "components/dashboard/UserAvatar";
 import { makeStyles } from "@material-ui/core/styles";
 
 
 const useStyles = makeStyles(theme => ({
   previewCard: {
-    padding: 15,
+    padding: 12,
     marginBottom: 15,
     background: "rgba(255, 255, 255, 0.6)",
     borderRadius: 8,
     width: "100%",
     '&:hover': {
       background: "rgba(255, 255, 255, 1)"
+    },
+    '&.Mui-selected': {
+      backgroundColor: "#FFF"
     }
   },
-  avatar: {
-    marginRight: 20
+  text: {
+    color: "#000"
   }
 }));
 
-const ConversationPreview = ({username, profilePath, isOnline, lastMessage, conversationId, customClickEvent}) => {
+const ConversationPreview = ({username, profilePath, isOnline, lastMessage, conversationId, customClickEvent, activeConversationId}) => {
   const classes = useStyles();
 
   const handleClick = () => {
@@ -30,17 +33,28 @@ const ConversationPreview = ({username, profilePath, isOnline, lastMessage, conv
   };
 
   return (
-    <Paper elevation={0} className={classes.previewCard} onClick={handleClick}>
-      <Box display="flex">
-        <Box className={classes.avatar}>
-          <UserAvatar username={username} profilePath={profilePath} isOnline={isOnline} />
-        </Box>
-        <Box display="flex" flexDirection="column" alignItems="flex-start">
-          <Typography variant="subtitle2">{username}</Typography>
-          <Typography variant="subtitle2">{lastMessage}</Typography>
-        </Box>
-      </Box>
-    </Paper>
+    <ListItem
+      button
+      selected={activeConversationId === conversationId}
+      className={classes.previewCard}
+      onClick={handleClick}
+    >
+      <ListItemAvatar>
+        <UserAvatar username={username} profilePath={profilePath} isOnline={isOnline} />
+      </ListItemAvatar>
+      <ListItemText
+        primary={username}
+        primaryTypographyProps={{
+          className: classes.text,
+          variant: "subtitle2"
+        }}
+        secondary={lastMessage}
+        secondaryTypographyProps={{
+          className: classes.text,
+          variant: "subtitle2"
+        }}
+      />
+    </ListItem>
   );
 }
 

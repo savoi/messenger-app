@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import Box from "@material-ui/core/Box";
-import GridList from '@material-ui/core/GridList';
+import List from '@material-ui/core/List';
 import { makeStyles } from "@material-ui/core/styles";
 import { getJson } from "api/APIUtils";
 import ConversationPreview from "components/dashboard/ConversationPreview";
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ConversationPreviews = ({ conversationClick, setError, previews, setPreviews, isNewConvo }) => {
+const ConversationPreviews = ({ conversationClick, setError, previews, setPreviews, isNewConvo, activeConversationId }) => {
   const classes = useStyles();
   const { user } = useContext(UserContext);
 
@@ -32,7 +32,7 @@ const ConversationPreviews = ({ conversationClick, setError, previews, setPrevie
 
   return (
     <Box p={1/2} alignSelf="flex-end" alignItems="center">
-      <GridList className={classes.list}>
+      <List className={classes.list}>
         {previews.map(preview => (
           <ConversationPreview
             key={preview['_id']['$oid']}
@@ -42,9 +42,10 @@ const ConversationPreviews = ({ conversationClick, setError, previews, setPrevie
             lastMessage={preview.messages[0]?.body ?? ""}
             conversationId={preview['_id']['$oid']}
             customClickEvent={conversationClick}
+            activeConversationId={activeConversationId}
           />
         ))}
-      </GridList>
+      </List>
     </Box>
   );
 }
