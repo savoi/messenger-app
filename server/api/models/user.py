@@ -1,10 +1,11 @@
 from flask_mongoengine import DoesNotExist
 from mongoengine import NotUniqueError, ValidationError
+import mongoengine_goodjson as gj
 
 from api import database as db
 
 
-class User(db.Document):
+class User(gj.Document):
     meta = {
         'collection': "users",
         'indexes': [
@@ -72,10 +73,10 @@ class User(db.Document):
     # Return a list of users matching a search string
     @staticmethod
     def search(search_text):
-        return User.objects.search_text(
-            search_text
+        return User.objects(
+            username__contains=search_text
         ).order_by(
-            '$text_score'
+            'username'
         ).only(
             'username', 'email'
         )

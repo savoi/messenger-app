@@ -1,6 +1,7 @@
 import datetime
 
 from flask_mongoengine import DoesNotExist
+import mongoengine_goodjson as gj
 
 from api import database as db
 
@@ -14,11 +15,11 @@ ERROR_ADD_MESSAGE = {
 }
 
 
-class Message(db.EmbeddedDocument):
+class Message(gj.EmbeddedDocument):
     conversation_id = db.ObjectIdField(
         required=True
     )
-    from_user = db.ObjectIdField(
+    from_user = db.StringField(
         required=True
     )
     body = db.StringField(
@@ -30,16 +31,16 @@ class Message(db.EmbeddedDocument):
     )
 
     @staticmethod
-    def add(from_user_id, to_user_id, conversation_id, message_body):
+    def add(from_username, to_username, conversation_id, message_body):
         try:
             message = Message(
-                from_user=from_user_id,
+                from_user=from_username,
                 body=message_body
             )
             # Need to create new conversation
             if not conversation_id:
                 conversation = Conversation(
-                    users=[from_user_id, to_user_id],
+                    users=[from_username, to_username],
                     messages=[]
                 )
                 conversation.save()
@@ -49,7 +50,7 @@ class Message(db.EmbeddedDocument):
                 message.conversation_id = conversation_id
                 conversation = Conversation.objects.get(
                     id=conversation_id,
-                    users__all=[from_user_id, to_user_id]
+                    users__all=[from_username, to_username]
                 )
             # Push message and save conversation
             conversation.update(push__messages=message)
@@ -59,10 +60,10 @@ class Message(db.EmbeddedDocument):
             return ERROR_ADD_MESSAGE
 
 
-class Conversation(db.Document):
+class Conversation(gj.Document):
     meta = {'collection': "conversations"}
     users = db.ListField(
-        db.ObjectIdField(),
+        db.StringField(),
         required=True
     )
     messages = db.SortedListField(
@@ -72,9 +73,9 @@ class Conversation(db.Document):
 
     # Returns the conversation with only the latest message between users
     @staticmethod
-    def get_previews(user_id):
+    def get_previews(username):
         return Conversation.objects(
-            users__in=[user_id]
+            users__in=[username]
         ).fields(
             slice__messages=[-1, 1]
         )
@@ -85,9 +86,9 @@ class Conversation(db.Document):
         return Conversation.objects.get(id=conversation_id)
 
     @staticmethod
-    def get_id(user_ids=[]):
+    def get_id(usernames=[]):
         try:
-            conversation = Conversation.objects.get(users__all=user_ids)
+            conversation = Conversation.objects.get(users__all=usernames)
             return conversation.id
         except DoesNotExist:
             return None

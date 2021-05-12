@@ -10,6 +10,7 @@ async function makeRequestWithJWT(method, apiEndpoint, postData) {
     credentials: 'same-origin',
     headers: {
       'X-CSRF-TOKEN': getCookie('csrf_access_token'),
+      'Content-Type': 'application/json'
     }
   };
   if (postData) {
@@ -50,14 +51,18 @@ async function handleBadAuthResponse(response) {
 
 export async function makeAuthCall(url, data) {
   const response = await fetch(url, getAuthFetchOptions(data));
-  const responseJson = await response.json();
   if (!response.ok) {
-    if (responseJson['message']) {
-      throw new Error(responseJson['message']);
+    try {
+      const responseJson = await response.json()
+      if (responseJson['message']) {
+        throw new Error(responseJson['message']);
+      }
+      return handleBadAuthResponse(response);
+    } catch(err) {
+        throw new Error("Server error.");
     }
-    return handleBadAuthResponse(response);
   } else {
-    return responseJson;
+    return await response.json();
   }
 }
 
@@ -68,5 +73,41 @@ export async function getUser() {
     return jsonResponse['current_user'];
   } else {
     throw new Error('Error fetching user.');
+  }
+}
+
+export async function getJson(url) {
+  const response = await getWithJWT(url);
+  if (response.ok) {
+    const jsonResponse =  await response.json();
+    return jsonResponse;
+  } else {
+    throw new Error('Error fetching data.');
+  }
+}
+
+export async function postMessage(body, toUsername) {
+  const data = {
+    body: body,
+    to_username: toUsername
+  };
+  const response = await postWithJWT('/messages', data);
+  if (response.ok) {
+    return response;
+  } else {
+    throw new Error("Error sending message.");
+  }
+}
+
+export async function newConversation(usernames) {
+  const data = {
+    usernames: usernames
+  };
+  const response = await postWithJWT('/conversations', data);
+  const responseJson = await response.json();
+  if (response.ok) {
+    return responseJson;
+  } else {
+    throw new Error("Error starting new conversation.", responseJson);
   }
 }

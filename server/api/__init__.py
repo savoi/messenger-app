@@ -61,6 +61,6 @@ def create_app(test_config=None):
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):
         identity = jwt_data["sub"]
-        return User.objects.get(email=identity)
+        return User.objects.get(username=identity)
 
     return app
