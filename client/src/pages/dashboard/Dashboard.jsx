@@ -250,11 +250,14 @@ export default function Dashboard() {
                 <NarrowContainer>
                   <Grid container item direction="column" justify="space-between" lg={12} className={classes.messages}>
                     {activeConversationMessages.map(message => (
-                      <React.Fragment>
-                        <Message key={message['created_at']['$date']} fromUser={message['from_user']} body={message.body} timestamp={message['created_at']['$date']} />
-                        <div key={-1} ref={messagesEndRef} />
-                      </React.Fragment>
+                      <Message
+                        key={message['created_at']['$date']}
+                        fromUser={message['from_user']}
+                        body={message.body}
+                        timestamp={message['created_at']['$date']}
+                      />
                     ))}
+                    <div key={-1} ref={messagesEndRef} />
                   </Grid>
                 </NarrowContainer>
               </Grid>
