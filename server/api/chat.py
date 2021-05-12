@@ -6,6 +6,7 @@ from flask_jwt_extended import current_user, jwt_required
 from api.models.conversation import Message
 from api.models.conversation import Conversation
 from api.models.user import User
+from api.utils import jsonify_bson
 
 chat = Blueprint('chat', __name__)
 
@@ -77,11 +78,11 @@ def conversations(conversation_id=None):
         try:
             if not conversation_id:
                 conversation_previews = Conversation.get_previews(current_user.username)
-                return jsonify(conversation_previews), 200
+                return jsonify_bson(conversation_previews), 200
             else:
                 conversation = Conversation.get(conversation_id)
                 if current_user.username in conversation.users:
-                    return jsonify(conversation), 200
+                    return jsonify_bson(conversation), 200
                 else:
                     return jsonify(ERROR_UNAUTHORIZED_ACCESS), 401
         except Exception:
@@ -95,7 +96,7 @@ def users():
         search_text = request.args.get('search')
         if search_text:
             users = User.search(search_text)
-            return jsonify(users), 200
+            return jsonify_bson(users), 200
         else:
             return jsonify(ERROR_EMPTY_SEARCH_STRING), 400
     except Exception:

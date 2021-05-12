@@ -1,6 +1,7 @@
 import datetime
 
 from flask_mongoengine import DoesNotExist
+import mongoengine_goodjson as gj
 
 from api import database as db
 
@@ -14,7 +15,7 @@ ERROR_ADD_MESSAGE = {
 }
 
 
-class Message(db.EmbeddedDocument):
+class Message(gj.EmbeddedDocument):
     conversation_id = db.ObjectIdField(
         required=True
     )
@@ -59,7 +60,7 @@ class Message(db.EmbeddedDocument):
             return ERROR_ADD_MESSAGE
 
 
-class Conversation(db.Document):
+class Conversation(gj.Document):
     meta = {'collection': "conversations"}
     users = db.ListField(
         db.StringField(),

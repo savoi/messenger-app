@@ -35,12 +35,12 @@ const ConversationPreviews = ({ conversationClick, setError, previews, setPrevie
       <List className={classes.list}>
         {previews.map(preview => (
           <ConversationPreview
-            key={preview['_id']['$oid']}
+            key={preview.id}
             username={preview.users.filter(username => username !== user)[0]}
             profilePath="/"
             isOnline={true}
             lastMessage={preview.messages[0]?.body ?? ""}
-            conversationId={preview['_id']['$oid']}
+            conversationId={preview.id}
             customClickEvent={conversationClick}
             activeConversationId={activeConversationId}
           />

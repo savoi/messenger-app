@@ -1,10 +1,11 @@
 from flask_mongoengine import DoesNotExist
 from mongoengine import NotUniqueError, ValidationError
+import mongoengine_goodjson as gj
 
 from api import database as db
 
 
-class User(db.Document):
+class User(gj.Document):
     meta = {
         'collection': "users",
         'indexes': [

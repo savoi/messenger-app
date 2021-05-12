@@ -51,14 +51,18 @@ async function handleBadAuthResponse(response) {
 
 export async function makeAuthCall(url, data) {
   const response = await fetch(url, getAuthFetchOptions(data));
-  const responseJson = await response.json();
   if (!response.ok) {
-    if (responseJson['message']) {
-      throw new Error(responseJson['message']);
+    try {
+      const responseJson = await response.json()
+      if (responseJson['message']) {
+        throw new Error(responseJson['message']);
+      }
+      return handleBadAuthResponse(response);
+    } catch(err) {
+        throw new Error("Server error.");
     }
-    return handleBadAuthResponse(response);
   } else {
-    return responseJson;
+    return await response.json();
   }
 }
 

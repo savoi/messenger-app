@@ -158,7 +158,7 @@ export default function Dashboard() {
         return preview.users.includes(username);
       });
       if (preview) {
-        setActiveConversationId(preview.['_id']['$oid']);
+        setActiveConversationId(preview.id);
       } else {
         newConversation([user, username])
         .then((response) => {
@@ -251,10 +251,10 @@ export default function Dashboard() {
                   <Grid container item direction="column" justify="space-between" lg={12} className={classes.messages}>
                     {activeConversationMessages.map(message => (
                       <Message
-                        key={message['created_at']['$date']}
+                        key={message['created_at']}
                         fromUser={message['from_user']}
                         body={message.body}
-                        timestamp={message['created_at']['$date']}
+                        timestamp={message['created_at']}
                       />
                     ))}
                     <div key={-1} ref={messagesEndRef} />
