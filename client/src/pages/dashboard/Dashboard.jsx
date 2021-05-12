@@ -20,8 +20,79 @@ import MessageField from "components/dashboard/MessageField";
 import ChatPlaceholder from "components/dashboard/ChatPlaceholder";
 import DashboardSnackbar from "components/dashboard/DashboardSnackbar";
 import { getJson, newConversation } from "api/APIUtils";
+import clsx from "clsx";
 
 const ITEM_HEIGHT = 48;
+
+const NarrowContainer = withStyles({
+  root: {
+    paddingRight: 48,
+    paddingLeft: 48
+  }
+})(Container);
+
+const useDashboardStyles = makeStyles(theme => ({
+  userpanel: {
+    backgroundColor: "#F5F7FB",
+    width: "100%"
+  },
+  usermenu: {
+    color: "#95A7C4"
+  },
+  username: {
+    fontWeight: 600
+  },
+  userMenuHeader: {
+    paddingTop: 15
+  },
+  avatar: {
+    paddingRight: 15
+  },
+  sidebarTitle: {
+    paddingTop: 10
+  },
+  userSearch: {
+    backgroundColor: "#E9EEF9",
+    borderColor: "#E9EEF9",
+    marginTop: 15
+  },
+  sidePanel: {
+    maxHeight: "100vh",
+    height: "100vh"
+  },
+  chatPanel: {
+    maxHeight: "100vh"
+  },
+  chatPanelActive: {
+    backgroundColor: "#FFF"
+  },
+  chatPanelInactive: {
+    backgroundColor: "#F4F6FA"
+  },
+  messageContainer: {
+    flexGrow: 1,
+    overflow: "auto",
+    marginBottom: 30,
+    scrollbarWidth: "none",
+    '&::-webkit-scrollbar': {
+      width: 0,
+      height: 0
+    }
+  },
+  messages: {
+    '& > :first-child': {
+      marginTop: 10,
+    }
+  },
+  chatPreviews: {
+    overflow: "auto",
+    scrollbarWidth: "none",
+    '&::-webkit-scrollbar': {
+      width: 0,
+      height: 0
+    }
+  }
+}));
 
 export default function Dashboard() {
   const { user } = useContext(UserContext);
@@ -36,76 +107,16 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const open = Boolean(anchorEl);
   const messagesEndRef = useRef(null);
+  const classes = useDashboardStyles();
+
+  const chatPanelClassNames = clsx(classes.chatPanel, {
+    [classes.chatPanelActive]: activeConversationId,
+    [classes.chatPanelInactive]: !activeConversationId
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
-
-  const useDashboardStyles = makeStyles(theme => ({
-    userpanel: {
-      backgroundColor: "#F5F7FB",
-      width: "100%"
-    },
-    usermenu: {
-      color: "#95A7C4"
-    },
-    username: {
-      fontWeight: 600
-    },
-    userMenuHeader: {
-      paddingTop: 15
-    },
-    avatar: {
-      paddingRight: 15
-    },
-    sidebarTitle: {
-      paddingTop: 10
-    },
-    userSearch: {
-      backgroundColor: "#E9EEF9",
-      borderColor: "#E9EEF9",
-      marginTop: 15
-    },
-    sidePanel: {
-      maxHeight: "100vh",
-      height: "100vh"
-    },
-    chatPanel: {
-      backgroundColor: activeConversationId ? "#FFF" : "#F4F6FA",
-      maxHeight: "100vh"
-    },
-    messageContainer: {
-      flexGrow: 1,
-      overflow: "auto",
-      marginBottom: 30,
-      scrollbarWidth: "none",
-      '&::-webkit-scrollbar': {
-        width: 0,
-        height: 0
-      }
-    },
-    messages: {
-      '& > :first-child': {
-        marginTop: 10,
-      }
-    },
-    chatPreviews: {
-      overflow: "auto",
-      scrollbarWidth: "none",
-      '&::-webkit-scrollbar': {
-        width: 0,
-        height: 0
-      }
-    }
-  }));
-  const classes = useDashboardStyles();
-
-  const NarrowContainer = withStyles({
-    root: {
-      paddingRight: 48,
-      paddingLeft: 48
-    }
-  })(Container);
 
   useEffect(() => {
     scrollToBottom()
@@ -224,7 +235,7 @@ export default function Dashboard() {
       {
         activeConversationId
         ? (
-            <Grid container item id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={classes.chatPanel}>
+            <Grid container item id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={chatPanelClassNames}>
               <Grid item>
                 <ChatHeader toUsername={activeConversationUsers} isOnline={true} />
               </Grid>
