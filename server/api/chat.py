@@ -1,5 +1,3 @@
-import json
-
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import current_user, jwt_required
 
@@ -46,7 +44,9 @@ def messages():
     if not to_user:
         return jsonify(ERROR_RECIPIENT_DOES_NOT_EXIST), 400
 
-    conversation_id = Conversation.get_id([current_user.username, to_user.username])
+    conversation_id = Conversation.get_id([
+        current_user.username, to_user.username
+    ])
     db_response = Message.add(
         current_user.username, to_user.username, conversation_id, message_body
     )
@@ -76,9 +76,29 @@ def conversations(conversation_id=None):
             return jsonify({'status': "error", 'message': repr(e)}), 400
     else:
         try:
+            # Retrieve conversation by list of users or create
+            users = request.args.get('users')
+            if users:
+                userlist = users.split(',')
+                conversation = Conversation.get_id(userlist)
+                if conversation:
+                    return jsonify_bson(conversation), 200
+                else:
+                    conversation = Conversation(
+                        users=userlist
+                    ).save()
+                    return jsonify_bson({
+                        'conversationId': str(conversation.id)
+                    }), 201
+
+            # Retrieve conversation previews
             if not conversation_id:
-                conversation_previews = Conversation.get_previews(current_user.username)
+                conversation_previews = Conversation.get_previews(
+                    current_user.username
+                )
                 return jsonify_bson(conversation_previews), 200
+
+            # Retrieve conversation by id
             else:
                 conversation = Conversation.get(conversation_id)
                 if current_user.username in conversation.users:

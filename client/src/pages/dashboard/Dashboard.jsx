@@ -21,7 +21,7 @@ import Message from "components/dashboard/Message";
 import MessageField from "components/dashboard/MessageField";
 import ChatPlaceholder from "components/dashboard/ChatPlaceholder";
 import DashboardSnackbar from "components/dashboard/DashboardSnackbar";
-import { getJson, newConversation } from "api/APIUtils";
+import { getConversation, getJson } from "api/APIUtils";
 import clsx from "clsx";
 import useChat from "hooks/useChat";
 
@@ -35,21 +35,25 @@ const NarrowContainer = withStyles({
 })(Container);
 
 const useDashboardStyles = makeStyles(theme => ({
-  userpanel: {
-    backgroundColor: "#F5F7FB",
-    width: "100%"
+  avatar: {
+    paddingRight: 15
+  },
+  dashboard: {
+    height: "100vh",
+    maxHeight: "100vh",
   },
   usermenu: {
     color: "#95A7C4"
   },
-  username: {
-    fontWeight: 600
-  },
   userMenuHeader: {
     paddingTop: 15
   },
-  avatar: {
-    paddingRight: 15
+  username: {
+    fontWeight: 600
+  },
+  userpanel: {
+    backgroundColor: "#F5F7FB",
+    width: "100%"
   },
   sidebarTitle: {
     paddingTop: 10
@@ -64,8 +68,8 @@ const useDashboardStyles = makeStyles(theme => ({
     height: "100vh"
   },
   chatPanel: {
-    maxHeight: "100vh",
-    height: "100vh"
+    maxHeight: "100%",
+    height: "100%",
   },
   chatPanelActive: {
     backgroundColor: "#FFF"
@@ -104,7 +108,6 @@ const useDashboardStyles = makeStyles(theme => ({
 export default function Dashboard() {
   const { user } = useContext(UserContext);
   const { logoutUser } = useAuth();
-  const { messages, sendMessage } = useChat();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [activeConversationUsers, setActiveConversationUsers] = useState([]);
@@ -119,6 +122,7 @@ export default function Dashboard() {
   const classes = useDashboardStyles();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { messages, sendMessage } = useChat(activeConversationId);
 
   const chatPanelClassNames = clsx(classes.chatPanel, {
     [classes.chatPanelActive]: activeConversationId,
@@ -132,7 +136,7 @@ export default function Dashboard() {
   useEffect(() => {
     scrollToBottom()
     setNewMessage(false);
-  }, [activeConversationMessages]);
+  }, [activeConversationMessages, messages]);
 
   useEffect(() => {
     if (!activeConversationId || activeConversationId === -1) {
@@ -172,7 +176,7 @@ export default function Dashboard() {
       if (preview) {
         setActiveConversationId(preview.id);
       } else {
-        newConversation([user, username])
+        getConversation([user, username])
         .then((response) => {
           setIsNewConvo(prev => (!prev));
           setActiveConversationId(response['conversationId']);
@@ -204,6 +208,14 @@ export default function Dashboard() {
                 timestamp={message['created_at']}
               />
             ))}
+            {messages.map(message => (
+              <Message
+                key={message['createdAt']}
+                fromUser={message['fromUser']}
+                body={message.body}
+                timestamp={message['createdAt']}
+              />
+            ))}
             <div key={-1} ref={messagesEndRef} />
           </Grid>
         </NarrowContainer>
@@ -212,10 +224,8 @@ export default function Dashboard() {
         <Box mb={3}>
           <NarrowContainer>
             <MessageField
-              activeUser={activeConversationUsers[0]}
-              setNewMessage={setNewMessage}
+              sendMessage={sendMessage}
               setError={setError}
-              activeConversationId={activeConversationId}
             />
           </NarrowContainer>
         </Box>
@@ -237,7 +247,7 @@ export default function Dashboard() {
   );
 
   return (
-    <Box display="flex">
+    <Box display="flex" className={classes.dashboard}>
       <Grid container item id="user-panel" wrap="nowrap" xl={4} lg={4} md={4} className={classes.sidePanel}>
         <Paper elevation={0} square className={classes.userpanel}>
           <Container fixed>
@@ -308,10 +318,21 @@ export default function Dashboard() {
         ? (
             smallScreen ? drawerWithChatPanel : chatPanel
           )
-        :
-          <Grid container item id="chat-panel" lg={8} direction="column" justify="center" className={classes.chatPanel}>
-            <ChatPlaceholder />
-          </Grid>
+        : (
+            smallScreen
+            ? drawerWithChatPanel
+            : <Grid
+                container
+                item
+                id="chat-panel"
+                lg={8}
+                direction="column"
+                justify="center"
+                className={classes.chatPanel}
+              >
+                <ChatPlaceholder />
+              </Grid>
+          )
       }
       <DashboardSnackbar error={error} />
     </Box>

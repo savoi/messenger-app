@@ -11,9 +11,11 @@ from flask_jwt_extended import (
     set_access_cookies
 )
 from flask_mongoengine import MongoEngine
+from flask_socketio import SocketIO
 
 database = MongoEngine()
 jwt = JWTManager()
+socketio = SocketIO(logger=True)
 
 
 def create_app(test_config=None):
@@ -25,6 +27,8 @@ def create_app(test_config=None):
             os.makedirs(app.instance_path)
         if test_config is None:
             app.config.from_pyfile('config.py', silent=False)
+            allowed_origins = app.config['WEBSOCKET_ALLOWED_ORIGINS']
+            socketio.server_options['cors_allowed_origins'] = allowed_origins
         else:
             app.config.from_mapping(test_config)
     except FileNotFoundError:
@@ -35,13 +39,16 @@ def create_app(test_config=None):
 
     database.init_app(app)
     jwt.init_app(app)
+    socketio.init_app(app)
 
     from api.auth import auth
     from api.chat import chat
+    from api.events import events
     from api.models.user import User
 
     app.register_blueprint(auth)
     app.register_blueprint(chat)
+    app.register_blueprint(events)
 
     # Refresh any token that is within 30 minutes of expiring.
     @app.after_request

@@ -37,7 +37,7 @@
    installed (`pip install pipenv`)
 2. Install the dependencies with `pipenv install`. This also creates a virtual
    environment, if there isn't one already.
-3. Activate the virtual environment and start the app with `pipenv run flask run`
+3. Activate the virtual environment and start the app with `pipenv run python chat.py`
 
 ## Testing the application
 

@@ -92,3 +92,17 @@ class Conversation(gj.Document):
             return conversation.id
         except DoesNotExist:
             return None
+
+    def add_message(self, from_user, body, created_at=None):
+        try:
+            message = Message(
+                conversation_id=self.id,
+                from_user=from_user,
+                body=body,
+                created_at=created_at
+            )
+            self.update(push__messages=message)
+            self.save()
+            return SUCCESS_ADD_MESSAGE
+        except Exception:
+            return ERROR_ADD_MESSAGE

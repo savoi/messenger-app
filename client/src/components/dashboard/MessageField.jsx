@@ -4,7 +4,6 @@ import TextField from '@material-ui/core/TextField';
 import SentimentSatisfiedOutlinedIcon from '@material-ui/icons/SentimentSatisfiedOutlined';
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { postMessage } from "api/APIUtils";
 
 
 const useDashboardStyles = makeStyles(theme => ({
@@ -49,20 +48,15 @@ const CustomTextField = withStyles({
 })(TextField);
 
 
-export default function MessageField({ activeUser, setNewMessage, setError }) {
+export default function MessageField({ setError, sendMessage }) {
   const classes = useDashboardStyles();
   const [message, setMessage] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (message) {
-      postMessage(message, activeUser)
-      .then(response => {
-        setMessage("");
-        setNewMessage(true);
-      }).catch(err => {
-        setError(err.message);
-      });
+      sendMessage(message);
+      setMessage("");
     }
   }
 
