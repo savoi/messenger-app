@@ -122,7 +122,7 @@ export default function Dashboard() {
   const classes = useDashboardStyles();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const { messages, sendMessage } = useChat(activeConversationId);
+  const { messages, setMessages, sendMessage, onlineUsers } = useChat(user);
 
   const chatPanelClassNames = clsx(classes.chatPanel, {
     [classes.chatPanelActive]: activeConversationId,
@@ -146,10 +146,11 @@ export default function Dashboard() {
     .then(response => {
       setActiveConversationMessages(response.messages);
       setActiveConversationUsers(response.users.filter(otherUser => otherUser !== user));
+      setMessages([]);
     }).catch(err => {
       setError(err.message);
     });
-  }, [activeConversationId, newMessage, user]);
+  }, [activeConversationId, newMessage, user, setMessages]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -195,7 +196,7 @@ export default function Dashboard() {
   let chatPanel = (
     <Grid container item id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={chatPanelClassNames}>
       <Grid item>
-        <ChatHeader toUsername={activeConversationUsers} isOnline={true} handleDrawerClose={handleDrawerClose} />
+        <ChatHeader toUsername={activeConversationUsers} isOnline={activeConversationUsers in onlineUsers} handleDrawerClose={handleDrawerClose} />
       </Grid>
       <Grid item className={classes.messageContainer}>
         <NarrowContainer>
@@ -224,6 +225,7 @@ export default function Dashboard() {
         <Box mb={3}>
           <NarrowContainer>
             <MessageField
+              activeConversationId={activeConversationId}
               sendMessage={sendMessage}
               setError={setError}
             />
@@ -307,6 +309,7 @@ export default function Dashboard() {
                   setPreviews={setPreviews}
                   isNewConvo={isNewConvo}
                   activeConversationId={activeConversationId}
+                  onlineUsers={onlineUsers}
                 />
               </Grid>
             </Grid>
@@ -314,7 +317,7 @@ export default function Dashboard() {
         </Paper>
       </Grid>
       {
-        activeConversationId
+        (activeConversationId !== -1 && activeConversationId !== null)
         ? (
             smallScreen ? drawerWithChatPanel : chatPanel
           )

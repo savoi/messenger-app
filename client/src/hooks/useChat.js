@@ -1,47 +1,42 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import socketIOClient from "socket.io-client";
-import { UserContext } from 'contexts/UserContext';
+import { getJson } from "api/APIUtils";
 
 const NEW_CHAT_MESSAGE_EVENT = "newChatMessage";
 const ONLINE_STATUS_UPDATE = "onlineStatusUpdate"
-const SOCKET_SERVER_URL = "http://127.0.0.1:5000";
+const SOCKET_SERVER_URL = "http://localhost:5000";
 
-const useChat = (roomId) => {
-  const { user } = useContext(UserContext);
+const useChat = (user) => {
   const [messages, setMessages] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState({});
+  const [error, setError] = useState(null);
   const socketRef = useRef();
 
   useEffect(() => {
-    if (roomId) {
-      setMessages([]);
-
+    getJson('/conversations')
+    .then(previews => {
+      const rooms = previews.map(preview => preview.id);
       socketRef.current = socketIOClient(SOCKET_SERVER_URL, {
-        query: { roomId, user },
-        withCredentials: true,
+        query: { rooms, user },
+        withCredentials: true
       });
-
-      // Listens for incoming messages
       socketRef.current.on(NEW_CHAT_MESSAGE_EVENT, (message) => {
-        const incomingMessage = {
-          ...message,
-          ownedByCurrentUser: message.senderId === socketRef.current.id,
-        };
-        setMessages((messages) => [...messages, incomingMessage]);
+        setMessages((messages) => [...messages, message]);
       });
-
-      // Online status updates
       socketRef.current.on(ONLINE_STATUS_UPDATE, (users) => {
-        console.log(users);
+        setOnlineUsers(users);
       });
+    }).catch(err => {
+      setError(err.message);
+    });
 
-      return () => {
-        socketRef.current.disconnect();
-      };
+    return () => {
+      socketRef.current.disconnect()
     }
-  }, [roomId, user]);
+  }, [user]);
 
   // Send message to backend
-  const sendMessage = (messageBody) => {
+  const sendMessage = (roomId, messageBody) => {
     socketRef.current.emit(NEW_CHAT_MESSAGE_EVENT, {
       senderId: socketRef.current.id,
       roomId: roomId,
@@ -50,7 +45,13 @@ const useChat = (roomId) => {
     });
   };
 
-  return { messages, sendMessage };
+  return {
+    error,
+    messages,
+    onlineUsers,
+    sendMessage,
+    setMessages
+  };
 };
 
 export default useChat;

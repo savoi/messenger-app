@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -9,7 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { getJson } from "api/APIUtils";
 import useDebounce from "hooks/useDebounce";
-import UserAvatar from "components/dashboard/UserAvatar";
 
 
 const useStyles = makeStyles(theme => ({
@@ -117,7 +117,7 @@ export default function SearchBar({ setError, handleSelectUser }) {
       renderOption={(option) => (
         <Grid container alignItems="center" spacing={2}>
           <Grid item>
-            <UserAvatar username={option} isOnline={true} />
+            <Avatar alt={option} src="/" />
           </Grid>
           <Grid item>
             <Typography variant="subtitle2">{option}</Typography>

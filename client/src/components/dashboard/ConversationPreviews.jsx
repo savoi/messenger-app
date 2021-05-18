@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ConversationPreviews = ({ conversationClick, setError, previews, setPreviews, isNewConvo, activeConversationId }) => {
+const ConversationPreviews = ({ conversationClick, setError, previews, setPreviews, isNewConvo, activeConversationId, onlineUsers }) => {
   const classes = useStyles();
   const { user } = useContext(UserContext);
 
@@ -38,7 +38,7 @@ const ConversationPreviews = ({ conversationClick, setError, previews, setPrevie
             key={preview.id}
             username={preview.users.filter(username => username !== user)[0]}
             profilePath="/"
-            isOnline={true}
+            isOnline={preview.users.filter(username => username !== user)[0] in onlineUsers}
             lastMessage={preview.messages[0]?.body ?? ""}
             conversationId={preview.id}
             customClickEvent={conversationClick}
