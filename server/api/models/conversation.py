@@ -78,6 +78,8 @@ class Conversation(gj.Document):
             users__in=[username]
         ).fields(
             slice__messages=[-1, 1]
+        ).order_by(
+            '-messages.created_at'
         )
 
     # Return full conversation
