@@ -181,6 +181,7 @@ export default function Dashboard() {
       });
       if (preview) {
         setActiveConversationId(preview.id);
+        setDrawerOpen(true);
       } else {
         getConversation([user, username])
         .then((response) => {
