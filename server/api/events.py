@@ -52,6 +52,11 @@ def disconnect():
     handle_status_update()
 
 
+@socketio.on('join')
+def join(data):
+    join_room(data['roomId'])
+
+
 @socketio.on('newChatMessage')
 def handle_message(data):
     conversation_id = data['roomId']

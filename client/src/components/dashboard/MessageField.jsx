@@ -48,14 +48,14 @@ const CustomTextField = withStyles({
 })(TextField);
 
 
-export default function MessageField({ setError, sendMessage, activeConversationId }) {
+export default function MessageField({ setError, sendMessage, activeConversationId, activeConversationUsers }) {
   const classes = useDashboardStyles();
   const [message, setMessage] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (message) {
-      sendMessage(activeConversationId, message);
+      sendMessage(activeConversationId, message, activeConversationUsers);
       setMessage("");
     }
   }

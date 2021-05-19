@@ -1,8 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import Box from "@material-ui/core/Box";
 import List from '@material-ui/core/List';
 import { makeStyles } from "@material-ui/core/styles";
-import { getJson } from "api/APIUtils";
 import ConversationPreview from "components/dashboard/ConversationPreview";
 import { UserContext } from 'contexts/UserContext';
 
@@ -17,18 +16,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ConversationPreviews = ({ conversationClick, setError, previews, setPreviews, isNewConvo, activeConversationId, onlineUsers }) => {
+const ConversationPreviews = ({ conversationClick, previews, activeConversationId, onlineUsers }) => {
   const classes = useStyles();
   const { user } = useContext(UserContext);
-
-  useEffect(() => {
-    getJson('/conversations')
-    .then(response => {
-      setPreviews(response);
-    }).catch(err => {
-      setError(err.message);
-    });
-  }, [setError, setPreviews, isNewConvo]);
 
   return (
     <Box p={1/2} alignSelf="flex-end" alignItems="center">

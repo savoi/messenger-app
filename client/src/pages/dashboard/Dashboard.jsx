@@ -113,8 +113,6 @@ export default function Dashboard() {
   const [activeConversationUsers, setActiveConversationUsers] = useState([]);
   const [activeConversationMessages, setActiveConversationMessages] = useState([]);
   const [newMessage, setNewMessage] = useState(null);
-  const [previews, setPreviews] = useState([]);
-  const [isNewConvo, setIsNewConvo] = useState(false);
   const [error, setError] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const open = Boolean(anchorEl);
@@ -122,7 +120,14 @@ export default function Dashboard() {
   const classes = useDashboardStyles();
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const { messages, setMessages, sendMessage, onlineUsers } = useChat(user);
+  const {
+    messages,
+    joinConversation,
+    previews,
+    setMessages,
+    sendMessage,
+    onlineUsers
+  } = useChat(user);
 
   const chatPanelClassNames = clsx(classes.chatPanel, {
     [classes.chatPanelActive]: activeConversationId,
@@ -179,7 +184,8 @@ export default function Dashboard() {
       } else {
         getConversation([user, username])
         .then((response) => {
-          setIsNewConvo(prev => (!prev));
+          setActiveConversationUsers([username]);
+          joinConversation(response['conversationId']);
           setActiveConversationId(response['conversationId']);
         })
         .catch((err) => {
@@ -187,7 +193,7 @@ export default function Dashboard() {
         });
       }
     }
-  }, [previews, user]);
+  }, []);
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
@@ -226,6 +232,7 @@ export default function Dashboard() {
           <NarrowContainer>
             <MessageField
               activeConversationId={activeConversationId}
+              activeConversationUsers={activeConversationUsers}
               sendMessage={sendMessage}
               setError={setError}
             />
@@ -304,10 +311,7 @@ export default function Dashboard() {
               <Grid item className={classes.chatPreviews}>
                 <ConversationPreviews
                   conversationClick={handleConversationClick}
-                  setError={setError}
                   previews={previews}
-                  setPreviews={setPreviews}
-                  isNewConvo={isNewConvo}
                   activeConversationId={activeConversationId}
                   onlineUsers={onlineUsers}
                 />

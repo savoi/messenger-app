@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import current_user, jwt_required
 
@@ -80,9 +82,9 @@ def conversations(conversation_id=None):
             users = request.args.get('users')
             if users:
                 userlist = users.split(',')
-                conversation = Conversation.get_id(userlist)
-                if conversation:
-                    return jsonify_bson(conversation), 200
+                conversation_id = Conversation.get_id(userlist)
+                if conversation_id:
+                    return jsonify({'conversationId': str(conversation_id)}), 200
                 else:
                     conversation = Conversation(
                         users=userlist
@@ -105,7 +107,8 @@ def conversations(conversation_id=None):
                     return jsonify_bson(conversation), 200
                 else:
                     return jsonify(ERROR_UNAUTHORIZED_ACCESS), 401
-        except Exception:
+        except Exception as e:
+            logging.exception(request, e)
             return jsonify(ERROR_GET_CONVERSATION_PREVIEWS), 500
 
 
