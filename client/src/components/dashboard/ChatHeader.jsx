@@ -1,6 +1,8 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Container from '@material-ui/core/Container';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Paper from "@material-ui/core/Paper";
@@ -44,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function ChatHeader({toUsername, isOnline}) {
+export default function ChatHeader({ toUsername, isOnline, handleDrawerClose }) {
   const classes = useStyles();
 
   return (
@@ -52,6 +54,13 @@ export default function ChatHeader({toUsername, isOnline}) {
       <StyledPaper square elevation={0}>
         <Container fixed>
           <Box id="user-menu-header" display="flex" flexGrow="1" alignItems="center" p={2} pb={3}>
+            <Hidden smUp>
+              <Box pr={2}>
+                <IconButton onClick={handleDrawerClose}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Box>
+            </Hidden>
             <Box pr={2}>
               <Typography variant="h6">{toUsername}</Typography>
             </Box>

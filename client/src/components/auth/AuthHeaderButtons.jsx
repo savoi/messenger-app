@@ -1,7 +1,6 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,7 +12,6 @@ const useStyles = makeStyles(theme => ({
     color: "#b0b0b0",
     fontWeight: 400,
     textAlign: "center",
-    marginRight: 21,
     whiteSpace: "nowrap"
   },
   accBtn: {
@@ -25,8 +23,17 @@ const useStyles = makeStyles(theme => ({
     filter: "drop-shadow(0px 2px 6px rgba(74,106,149,0.2))",
     backgroundColor: "#ffffff",
     color: "#3a8dff",
-    boxShadow: "none",
-    marginRight: 35
+    boxShadow: "none"
+  },
+  header: {
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+      alignSelf: "center",
+      "& > *": {
+        marginRight: 0,
+        marginBottom: 8
+      }
+    },
   }
 }));
 
@@ -48,11 +55,20 @@ const AuthHeaderButtons = ({page}) => {
   }
 
   return (
-    <Box p={1} alignSelf="flex-end" alignItems="center">
-      <Grid container alignItems="center">
+    <Box
+      display="flex"
+      flexDirection="row"
+      p={1}
+      alignSelf="flex-end"
+      alignItems="center"
+      className={classes.header}
+    >
+      <Box mr={4}>
         <Typography className={classes.noAccBtn}>
           {leftButtonMsg[page]}
         </Typography>
+      </Box>
+      <Box mr={4}>
         <Link to={linkTo[page]} className={classes.link}>
           <Button
             color="default"
@@ -62,7 +78,7 @@ const AuthHeaderButtons = ({page}) => {
             {rightButtonMsg[page]}
           </Button>
         </Link>
-      </Grid>
+      </Box>
     </Box>
   );
 }

@@ -52,15 +52,11 @@ async function handleBadAuthResponse(response) {
 export async function makeAuthCall(url, data) {
   const response = await fetch(url, getAuthFetchOptions(data));
   if (!response.ok) {
-    try {
-      const responseJson = await response.json()
-      if (responseJson['message']) {
-        throw new Error(responseJson['message']);
-      }
-      return handleBadAuthResponse(response);
-    } catch(err) {
-        throw new Error("Server error.");
+    const responseJson = await response.json();
+    if (responseJson['message']) {
+      throw new Error(responseJson['message']);
     }
+    return handleBadAuthResponse(response);
   } else {
     return await response.json();
   }
@@ -110,4 +106,8 @@ export async function newConversation(usernames) {
   } else {
     throw new Error("Error starting new conversation.", responseJson);
   }
+}
+
+export async function getConversation(usernames) {
+  return await getJson(`/conversations?users=${usernames.join()}`);
 }

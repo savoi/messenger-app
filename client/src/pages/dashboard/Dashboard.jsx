@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Box from "@material-ui/core/Box";
 import Container from '@material-ui/core/Container';
+import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -10,7 +11,8 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import { UserContext } from 'contexts/UserContext';
 import useAuth from 'hooks/useAuth';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import UserAvatar from "components/dashboard/UserAvatar";
 import ConversationPreviews from "components/dashboard/ConversationPreviews";
 import SearchBar from "components/dashboard/SearchBar";
@@ -19,8 +21,9 @@ import Message from "components/dashboard/Message";
 import MessageField from "components/dashboard/MessageField";
 import ChatPlaceholder from "components/dashboard/ChatPlaceholder";
 import DashboardSnackbar from "components/dashboard/DashboardSnackbar";
-import { getJson, newConversation } from "api/APIUtils";
+import { getConversation, getJson } from "api/APIUtils";
 import clsx from "clsx";
+import useChat from "hooks/useChat";
 
 const ITEM_HEIGHT = 48;
 
@@ -32,21 +35,25 @@ const NarrowContainer = withStyles({
 })(Container);
 
 const useDashboardStyles = makeStyles(theme => ({
-  userpanel: {
-    backgroundColor: "#F5F7FB",
-    width: "100%"
+  avatar: {
+    paddingRight: 15
+  },
+  dashboard: {
+    height: "100vh",
+    maxHeight: "100vh",
   },
   usermenu: {
     color: "#95A7C4"
   },
-  username: {
-    fontWeight: 600
-  },
   userMenuHeader: {
     paddingTop: 15
   },
-  avatar: {
-    paddingRight: 15
+  username: {
+    fontWeight: 600
+  },
+  userpanel: {
+    backgroundColor: "#F5F7FB",
+    width: "100%"
   },
   sidebarTitle: {
     paddingTop: 10
@@ -61,7 +68,8 @@ const useDashboardStyles = makeStyles(theme => ({
     height: "100vh"
   },
   chatPanel: {
-    maxHeight: "100vh"
+    maxHeight: "100%",
+    height: "100%",
   },
   chatPanelActive: {
     backgroundColor: "#FFF"
@@ -91,6 +99,9 @@ const useDashboardStyles = makeStyles(theme => ({
       width: 0,
       height: 0
     }
+  },
+  drawer: {
+    width: "100%"
   }
 }));
 
@@ -102,12 +113,21 @@ export default function Dashboard() {
   const [activeConversationUsers, setActiveConversationUsers] = useState([]);
   const [activeConversationMessages, setActiveConversationMessages] = useState([]);
   const [newMessage, setNewMessage] = useState(null);
-  const [previews, setPreviews] = useState([]);
-  const [isNewConvo, setIsNewConvo] = useState(false);
   const [error, setError] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const open = Boolean(anchorEl);
   const messagesEndRef = useRef(null);
   const classes = useDashboardStyles();
+  const theme = useTheme();
+  const smallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const {
+    messages,
+    joinConversation,
+    previews,
+    setMessages,
+    sendMessage,
+    onlineUsers
+  } = useChat(user);
 
   const chatPanelClassNames = clsx(classes.chatPanel, {
     [classes.chatPanelActive]: activeConversationId,
@@ -121,7 +141,7 @@ export default function Dashboard() {
   useEffect(() => {
     scrollToBottom()
     setNewMessage(false);
-  }, [activeConversationMessages]);
+  }, [activeConversationMessages, messages]);
 
   useEffect(() => {
     if (!activeConversationId || activeConversationId === -1) {
@@ -131,10 +151,11 @@ export default function Dashboard() {
     .then(response => {
       setActiveConversationMessages(response.messages);
       setActiveConversationUsers(response.users.filter(otherUser => otherUser !== user));
+      setMessages([]);
     }).catch(err => {
       setError(err.message);
     });
-  }, [activeConversationId, newMessage, user]);
+  }, [activeConversationId, newMessage, user, setMessages]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -150,6 +171,7 @@ export default function Dashboard() {
 
   const handleConversationClick = (conversationId) => {
     setActiveConversationId(conversationId);
+    setDrawerOpen(true);
   }
 
   const handleSelectUser = useCallback((username) => {
@@ -159,10 +181,12 @@ export default function Dashboard() {
       });
       if (preview) {
         setActiveConversationId(preview.id);
+        setDrawerOpen(true);
       } else {
-        newConversation([user, username])
+        getConversation([user, username])
         .then((response) => {
-          setIsNewConvo(prev => (!prev));
+          setActiveConversationUsers([username]);
+          joinConversation(response['conversationId']);
           setActiveConversationId(response['conversationId']);
         })
         .catch((err) => {
@@ -170,10 +194,70 @@ export default function Dashboard() {
         });
       }
     }
-  }, [previews, user]);
+  }, []);
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
+
+  let chatPanel = (
+    <Grid container item id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={chatPanelClassNames}>
+      <Grid item>
+        <ChatHeader toUsername={activeConversationUsers} isOnline={activeConversationUsers in onlineUsers} handleDrawerClose={handleDrawerClose} />
+      </Grid>
+      <Grid item className={classes.messageContainer}>
+        <NarrowContainer>
+          <Grid container item direction="column" justify="space-between" lg={12} className={classes.messages}>
+            {activeConversationMessages.map(message => (
+              <Message
+                key={message['created_at']}
+                fromUser={message['from_user']}
+                body={message.body}
+                timestamp={message['created_at']}
+              />
+            ))}
+            {messages.map(message => (
+              <Message
+                key={message['createdAt']}
+                fromUser={message['fromUser']}
+                body={message.body}
+                timestamp={message['createdAt']}
+              />
+            ))}
+            <div key={-1} ref={messagesEndRef} />
+          </Grid>
+        </NarrowContainer>
+      </Grid>
+      <Grid item>
+        <Box mb={3}>
+          <NarrowContainer>
+            <MessageField
+              activeConversationId={activeConversationId}
+              activeConversationUsers={activeConversationUsers}
+              sendMessage={sendMessage}
+              setError={setError}
+            />
+          </NarrowContainer>
+        </Box>
+      </Grid>
+    </Grid>
+  );
+
+  let drawerWithChatPanel = (
+    <Drawer
+      variant="persistent"
+      anchor="right"
+      open={drawerOpen}
+      PaperProps={{
+        className: classes.drawer
+      }}
+    >
+      {chatPanel}
+    </Drawer>
+  );
 
   return (
-    <Box display="flex">
+    <Box display="flex" className={classes.dashboard}>
       <Grid container item id="user-panel" wrap="nowrap" xl={4} lg={4} md={4} className={classes.sidePanel}>
         <Paper elevation={0} square className={classes.userpanel}>
           <Container fixed>
@@ -228,11 +312,9 @@ export default function Dashboard() {
               <Grid item className={classes.chatPreviews}>
                 <ConversationPreviews
                   conversationClick={handleConversationClick}
-                  setError={setError}
                   previews={previews}
-                  setPreviews={setPreviews}
-                  isNewConvo={isNewConvo}
                   activeConversationId={activeConversationId}
+                  onlineUsers={onlineUsers}
                 />
               </Grid>
             </Grid>
@@ -240,40 +322,25 @@ export default function Dashboard() {
         </Paper>
       </Grid>
       {
-        activeConversationId
+        (activeConversationId !== -1 && activeConversationId !== null)
         ? (
-            <Grid container item id="chat-panel" lg={8} direction="column" justify="space-between" wrap="nowrap" className={chatPanelClassNames}>
-              <Grid item>
-                <ChatHeader toUsername={activeConversationUsers} isOnline={true} />
-              </Grid>
-              <Grid item className={classes.messageContainer}>
-                <NarrowContainer>
-                  <Grid container item direction="column" justify="space-between" lg={12} className={classes.messages}>
-                    {activeConversationMessages.map(message => (
-                      <Message
-                        key={message['created_at']}
-                        fromUser={message['from_user']}
-                        body={message.body}
-                        timestamp={message['created_at']}
-                      />
-                    ))}
-                    <div key={-1} ref={messagesEndRef} />
-                  </Grid>
-                </NarrowContainer>
-              </Grid>
-              <Grid item>
-                <Box mb={3}>
-                  <NarrowContainer>
-                    <MessageField activeUser={activeConversationUsers[0]} setNewMessage={setNewMessage} setError={setError} />
-                  </NarrowContainer>
-                </Box>
-              </Grid>
-            </Grid>
+            smallScreen ? drawerWithChatPanel : chatPanel
           )
-        :
-          <Grid container item id="chat-panel" lg={8} direction="column" justify="center" className={classes.chatPanel}>
-            <ChatPlaceholder />
-          </Grid>
+        : (
+            smallScreen
+            ? drawerWithChatPanel
+            : <Grid
+                container
+                item
+                id="chat-panel"
+                lg={8}
+                direction="column"
+                justify="center"
+                className={classes.chatPanel}
+              >
+                <ChatPlaceholder />
+              </Grid>
+          )
       }
       <DashboardSnackbar error={error} />
     </Box>
